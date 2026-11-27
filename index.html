@@ -223,7 +223,7 @@ const terms=Object.keys(GL).sort((a,b)=>b.length-a.length);
 const termRe=new RegExp('('+terms.map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','g');
 function hl(s){return esc(s).replace(termRe,m=>'<button class="term" data-term="'+esc(m)+'">'+m+'</button>')}
 const fmtStem=t=>esc(t).replace(/«(.*?)»/g,'<u>$1</u>').replace(/\n/g,'<br>');
-const stemOf=q=>{const ins='<span class="note" style="display:block;margin-bottom:6px">'+esc(q.instr)+'</span>';
+const stemOf=q=>{const ins='<span class="note ins" style="display:block;margin-bottom:6px">'+esc(q.instr)+'</span>';
   if(q.field==='用法') return ins+'<b style="font-size:1.3rem">'+esc(q.stem)+'</b>';
   if(q.field==='読解'){const k=q.stem.lastIndexOf('\n\n');return ins+'<span style="display:block;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;font-weight:400;line-height:1.9;margin-bottom:10px">'+fmtStem(q.stem.slice(0,k))+'</span><b>'+fmtStem(q.stem.slice(k+2))+'</b>'}
   return ins+fmtStem(q.stem)};
@@ -750,6 +750,144 @@ updateBadge(); render(); setSync('この端末に保存');
   }catch(e){setSync('この端末に保存')}
 })();
 })();
+</script>
+<script>
+/* ---------- 表示言語の切り替え（日本語 / Bahasa Indonesia）。問題文・選択肢・解説は日本語のまま ---------- */
+{
+const LANG_KEY='jlpt-drill-v1-lang';
+let LANG='ja';
+try{LANG=localStorage.getItem(LANG_KEY)||'ja'}catch(e){}
+const SEC={'漢字読み':'Membaca kanji','表記':'Penulisan kanji','文脈規定':'Konteks kata','文脈':'Konteks kata','言い換え類義':'Sinonim','言い換え':'Sinonim','用法':'Penggunaan kata','文法':'Tata bahasa','読解':'Pemahaman bacaan'};
+const MOCKL={'N2 模試':'Simulasi N2','N1 模試':'Simulasi N1','N2 ミニ模試':'Simulasi mini N2'};
+const BADGE={'はじめの一歩':'Langkah pertama','50問正解':'50 benar','100問正解':'100 benar','300問正解':'300 benar','1000問正解':'1000 benar','3日連続':'3 hari beruntun','1週間連続':'1 minggu beruntun','30日連続':'30 hari beruntun','1日20問正解':'20 benar sehari','N2制覇':'Taklukkan N2','N1デビュー':'Debut N1','N1制覇':'Taklukkan N1','模試デビュー':'Debut simulasi','模試合格':'Lulus simulasi','模試90%':'Simulasi 90%'};
+const INS={'＿＿の言葉の読み方として最もよいものを選びなさい。':'Pilih cara baca yang paling tepat untuk kata yang bergaris bawah.',
+'＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。':'Pilih penulisan kanji yang paling tepat untuk kata yang bergaris bawah.',
+'（　）に入れるのに最もよいものを選びなさい。':'Pilih kata yang paling tepat untuk mengisi (　).',
+'＿＿の言葉に意味が最も近いものを選びなさい。':'Pilih yang artinya paling dekat dengan kata yang bergaris bawah.',
+'次の言葉の使い方として最もよいものを選びなさい。':'Pilih kalimat yang menggunakan kata ini dengan paling tepat.',
+'次の文の（　）に入れるのに最もよいものを選びなさい。':'Pilih ungkapan yang paling tepat untuk mengisi (　) dalam kalimat.',
+'次の文章を読んで、質問に答えなさい。':'Baca teks berikut, lalu jawab pertanyaannya.'};
+const D={
+'この端末に保存':'Disimpan di perangkat ini','保存済み':'Tersimpan','この端末にだけ保存中':'Hanya disimpan di perangkat ini','読み込み中…':'Memuat…',
+'日本語能力試験 N2・N1 ・ 全':'Ujian Kemampuan Bahasa Jepang N2・N1 ・ total ','問':'soal',
+'ホーム':'Beranda','解く':'Latihan','間違えた':'Salah','成績':'Nilai','ランキング':'Peringkat','文法':'Tata bahasa',
+'今までの正解数':'Total jawaban benar','今日の正答率':'Akurasi hari ini','間違えた問題':'Soal yang salah','解き直すと消えます':'Hilang jika dijawab benar lagi',
+'日連続':'hari beruntun','模試モード':'Mode simulasi ujian','模試の続きを解く':'Lanjutkan simulasi',
+'時間を計って本番のように解き、6割（目安）を超えたか判定します。読み・語彙・文法・読解からバランスよく出題します。':'Kerjakan dengan batas waktu seperti ujian asli, lalu lihat apakah nilaimu di atas 60% (target). Soal diambil seimbang dari bacaan kanji, kosakata, tata bahasa, dan pemahaman bacaan.',
+'レベル':'Level','両方':'Keduanya','問題の種類':'Jenis soal','すべて':'Semua','順番':'Urutan','ランダム':'Acak','番号順':'Berurutan','問題数':'Jumlah soal','全部':'Semua','はじめる':'Mulai',
+'ホームで方式と分野を選んで「はじめる」を押してね。':'Pilih level dan jenis soal di Beranda, lalu tekan "Mulai".','ホームへ':'Ke Beranda',
+'答え合わせ':'Periksa jawaban','⭕ 正解':'⭕ Benar','❌ 不正解':'❌ Salah','← 正解':'← Jawaban benar','あなたが選択':'Pilihanmu','解説':'Penjelasan',
+'黄色いマーカーの文法をタップすると意味が出ます。':'Ketuk tata bahasa yang ditandai kuning untuk melihat artinya.',
+'やめる':'Berhenti','次の問題':'Soal berikutnya','結果を見る':'Lihat hasil',
+'おつかれさま！':'Kerja bagus!','今回の正解':'Benar kali ini','間違えた問題は「間違えた」タブからすぐ解き直せます。':'Soal yang salah bisa langsung diulang dari tab "Salah".','間違えた問題へ':'Ke soal yang salah',
+'タップするとその問題にすぐ飛びます。正解するとリストから消えます。':'Ketuk untuk langsung ke soal itu. Soal akan hilang dari daftar jika dijawab benar.',
+'まとめて解く':'Kerjakan semua','ありません':'Tidak ada',
+'選択肢方式':'Pilihan ganda','一問一答':'Benar / Salah','勉強した日':'Hari belajar','模試の記録':'Riwayat simulasi','日付':'Tanggal','種類':'Jenis','正解':'Benar','結果':'Hasil','⭕ 合格':'⭕ Lulus',
+'日ごとの正答率':'Akurasi per hari','まだ記録がありません':'Belum ada catatan','レベル別':'Per level','問題の種類別':'Per jenis soal','正解/解いた':'Benar / dijawab','正答率':'Akurasi','解いた日の記録':'Catatan harian','解いた':'Dijawab',
+'ニックネーム（ランキングに表示されます）':'Nama panggilan (tampil di peringkat)','参加する':'Ikut','変更':'Ubah',
+'ニックネームを決めると、正解数でみんなと競争できます。本名は入れないでね。':'Buat nama panggilan untuk bersaing jumlah jawaban benar dengan semua orang. Jangan pakai nama asli.',
+'正解するたびに自動でランキングに反映されます。':'Setiap jawaban benar otomatis masuk ke peringkat.',
+'累計正解':'Total benar','今週':'Minggu ini','🔥連続日数':'🔥Hari beruntun','位':'peringkat','問正解':'soal benar','日':'hari',
+'まだだれもいません。一番乗りしよう！':'Belum ada siapa pun. Jadilah yang pertama!','更新':'Muat ulang','ランキングから外れる':'Keluar dari peringkat',
+'今週は月曜日から日曜日までの集計です。':'"Minggu ini" dihitung dari Senin sampai Minggu.',
+'ランキングを読み込めませんでした。電波のよいところで「更新」を押してください。':'Gagal memuat peringkat. Tekan "Muat ulang" di tempat dengan sinyal yang bagus.',
+'ランキングは準備中です。':'Peringkat sedang disiapkan.',
+'文法メモ':'Catatan tata bahasa','見つかりませんでした':'Tidak ditemukan',
+'残り':'Sisa','前へ':'Sebelumnya','次へ':'Berikutnya','採点する':'Nilai sekarang','ここで採点する':'Nilai sekarang','模試をやめる':'Hentikan simulasi',
+'もう一度押すと終了（この模試は記録されません）':'Tekan sekali lagi untuk berhenti (simulasi ini tidak dicatat)',
+'🎉 合格ライン突破！':'🎉 Melewati batas lulus!','あと少し！':'Sedikit lagi!',
+'本番は聴解もあり、得点区分ごとの基準点もあります。6割は練習の目安です。':'Ujian asli juga punya bagian menyimak dan nilai minimum per bagian. 60% hanya target latihan.',
+'答え合わせ（タップで解説）':'Pembahasan (ketuk untuk penjelasan)','間違えた問題は「間違えた」タブにも入っています。':'Soal yang salah juga masuk ke tab "Salah".',
+'⏰ 時間になりました。採点しました':'⏰ Waktu habis. Jawaban sudah dinilai.','この条件の問題はありません':'Tidak ada soal untuk pilihan ini',
+'1問解く':'Jawab 1 soal','1日で20問正解':'20 benar dalam sehari','N2の問題を全問正解':'Semua soal N2 pernah dijawab benar','N1の問題で10問正解':'10 soal N1 dijawab benar','N1の問題を全問正解':'Semua soal N1 pernah dijawab benar','模試を1回受ける':'Ikut simulasi 1 kali','模試で合格ライン突破':'Melewati batas lulus simulasi','N2かN1の模試で正答率90%以上':'Akurasi 90% atau lebih di simulasi N2/N1',
+'@例：みかん太郎':'contoh: Budi123','@文法をさがす（例：ならでは）':'Cari tata bahasa (contoh: ならでは)'
+};
+Object.assign(D,BADGE);
+const sec=s=>SEC[s]||s, ml=s=>MOCKL[s]||s, ans=s=>s.replace('未回答','tidak dijawab').replace(/と/g,' & ');
+const RX=[
+ [/^問 ／ (\d+)問中（(\d+)%）$/,m=>`soal benar dari ${m[1]} (${m[2]}%)`],
+ [/^(\d+) \/ (\d+)問$/,m=>`${m[1]} / ${m[2]} soal`],
+ [/^(\d+)問$/,m=>`${m[1]} soal`],
+ [/^\/ (\d+) バッジ$/,m=>`/ ${m[1]} lencana`],
+ [/^今日も達成！ 明日も続けよう　最高 (\d+)日$/,m=>`Hari ini selesai! Lanjutkan besok　Rekor ${m[1]} hari`],
+ [/^今日解くと (\d+) 日連続！　最高 (\d+)日$/,m=>`Belajar hari ini = ${m[1]} hari beruntun!　Rekor ${m[2]} hari`],
+ [/^今日から連続記録をはじめよう　最高 (\d+)日$/,m=>`Mulai rekor beruntun hari ini　Rekor ${m[1]} hari`],
+ [/^(\d+)問・(\d+)分$/,m=>`${m[1]} soal・${m[2]} menit`],
+ [/^（(\d+)問・(\d+)分）$/,m=>`(${m[1]} soal・${m[2]} menit)`],
+ [/^(.+)の途中です（残り (.+)）$/,m=>`Sedang mengerjakan ${ml(m[1])} (sisa ${m[2]})`],
+ [/^間違えた問題だけ解く（(\d+)問）$/,m=>`Ulangi hanya soal yang salah (${m[1]})`],
+ [/^続きから解く（(\d+) \/ (\d+)）$/,m=>`Lanjutkan (${m[1]} / ${m[2]})`],
+ [/^(N[12])・(.+)$/,m=>`${m[1]}・${sec(m[2])}`],
+ [/^(.+)・ (\d+) \/ (\d+)$/,m=>`${m[1]==='間違えた問題'?'Soal yang salah':m[1]==='解き直し'?'Ulangi':m[1]}・ ${m[2]} / ${m[3]}`],
+ [/^あなた：(.+) →$/,m=>`Jawabanmu: ${ans(m[1])} →`],
+ [/^正解：(.+)$/,m=>`Jawaban benar: ${ans(m[1])}`],
+ [/^あなた：(.+)　正解：(.+)$/,m=>`Jawabanmu: ${ans(m[1])}　Jawaban benar: ${ans(m[2])}`],
+ [/^選択肢方式（(\d+)）$/,m=>`Pilihan ganda (${m[1]})`],
+ [/^一問一答（(\d+)）$/,m=>`Benar / Salah (${m[1]})`],
+ [/^(\d+\/\d+) に不正解$/,m=>`salah pada ${m[1]}`],
+ [/^バッジ（(\d+) \/ (\d+)）$/,m=>`Lencana (${m[1]} / ${m[2]})`],
+ [/^直近(\d+)日分（棒の上の数字は%）$/,m=>`${m[1]} hari terakhir (angka di atas batang = %)`],
+ [/^(N[12])（(\d+)\/(\d+)）$/,m=>`${m[1]} (${m[2]}/${m[3]})`],
+ [/^正答率 (\d+)%$/,m=>`Akurasi ${m[1]}%`],
+ [/^あなた（(.+)）$/,m=>`Kamu (${m[1]})`],
+ [/^🔥(\d+)日連続$/,m=>`🔥${m[1]} hari beruntun`],
+ [/^(.+?)　(\d+) \/ (\d+)（(.+)）$/,m=>`${ml(m[1])}　${m[2]} / ${m[3]} (${sec(m[4])})`],
+ [/^問題一覧（解答済み (\d+) \/ (\d+)）$/,m=>`Daftar soal (terjawab ${m[1]} / ${m[2]})`],
+ [/^(.+)の結果$/,m=>`Hasil ${ml(m[1])}`],
+ [/^(\d+) \/ (\d+)問正解（(\d+)%）　目安 (\d+)問　かかった時間 (\d+)分$/,m=>`${m[1]} / ${m[2]} benar (${m[3]}%)　Target ${m[4]} soal　Waktu ${m[5]} menit`],
+ [/^バッジ獲得！「(.+)」(?:（ほか(\d+)個）)?$/,m=>`Dapat lencana! "${BADGE[m[1]]||m[1]}"${m[2]?` (+${m[2]} lainnya)`:''}`],
+ [/^累計(\d+)問正解$/,m=>`Total ${m[1]} benar`],
+ [/^(\d+)日続けて解く$/,m=>`Belajar ${m[1]} hari berturut-turut`]
+];
+for(const k in SEC) D[k]=SEC[k];
+for(const k in MOCKL) D[k]=MOCKL[k];
+for(const k in INS) D[k]=k+'\n'+INS[k];
+const JP=/[぀-ヿ一-鿿]/;
+function trText(t){ if(D[t]!=null) return D[t]; for(const [re,f] of RX){const m=t.match(re); if(m) return f(m)} return null }
+function skipEl(p){
+  if(p.closest('script,style,#langBtn')) return true;
+  if(p.classList.contains('ins')) return false;
+  if(p.tagName==='B'&&p.parentElement&&p.parentElement.classList.contains('point')) return false;
+  if(p.classList.contains('nm')) return true;
+  if(p.matches('.res .line > span:nth-child(2)')) return true;
+  return !!p.closest('.stem,.opt,.point,.gl,summary,.item .t');
+}
+function tr(root){
+  if(LANG!=='id'||!root) return;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); const list=[]; let n;
+  while(n=w.nextNode()) list.push(n);
+  for(const n of list){
+    const p=n.parentElement; if(!p) continue;
+    const raw=n.nodeValue, t=raw.trim(); if(!t||!JP.test(t)) continue;
+    if(skipEl(p)&&!(p.tagName==='SUMMARY'&&t.startsWith('問題一覧'))) continue;
+    let r=trText(t); if(r==null||r===t) continue;
+    const prev=n.previousSibling;
+    if(/^[A-Za-z(]/.test(r)&&!/^\s/.test(raw)&&prev&&/[0-9A-Za-z]$/.test(prev.textContent||'')) r=' '+r;
+    n.nodeValue=raw.replace(t,r);
+  }
+  document.querySelectorAll('[placeholder]').forEach(e=>{const r=trText('@'+e.getAttribute('placeholder')); if(r) e.setAttribute('placeholder',r)});
+}
+/* language button in header */
+const top=document.querySelector('header.top');
+if(top){
+  const sync=document.getElementById('sync');
+  const box=document.createElement('div'); box.style.cssText='display:flex;flex-direction:column;align-items:flex-end;gap:4px';
+  const b=document.createElement('button'); b.id='langBtn'; b.type='button';
+  b.style.cssText='border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 10px;font:inherit;font-size:.8rem;cursor:pointer;white-space:nowrap';
+  b.textContent=LANG==='id'?'🇯🇵 日本語':'🇮🇩 Bahasa Indonesia';
+  b.setAttribute('aria-label',LANG==='id'?'日本語で表示する':'Tampilkan dalam Bahasa Indonesia');
+  b.addEventListener('click',()=>{try{localStorage.setItem(LANG_KEY,LANG==='id'?'ja':'id')}catch(e){} location.reload()});
+  sync.parentNode.insertBefore(box,sync); box.appendChild(b); box.appendChild(sync);
+}
+if(LANG==='id'){
+  document.documentElement.lang='id';
+  const st=document.createElement('style'); st.textContent='.ins{white-space:pre-line}'; document.head.appendChild(st);
+  let q=false;
+  const run=()=>{q=false; tr(document.body)};
+  new MutationObserver(()=>{if(!q){q=true;requestAnimationFrame(run)}}).observe(document.body,{childList:true,subtree:true});
+  run();
+}
+}
 </script>
 <script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(()=>{})})}

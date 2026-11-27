@@ -1,6 +1,6 @@
 // JLPT合格ドリル：オフラインでも開けるようにするしくみ
 // 問題を入れ替えたら VERSION の数字を1つ上げてください
-const VERSION='v1';
+const VERSION='v2';
 const CACHE='jlpt-drill-'+VERSION;
 const FILES=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png','./apple-touch-icon.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()))});
