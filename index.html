@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JLPT合格ドリル</title>
+<meta name="description" content="日本語能力試験（JLPT）N2・N1の文字・語彙・文法・読解を練習できる問題集アプリ">
+<meta name="theme-color" content="#a8352b">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="JLPTドリル">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}body{margin:0;font-size:14px;font-family:system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* Layout: one narrow study column, bottom tab bar on phones (top on wide screens) */
+:root{
+  --bg:#f7f4ef; --surface:#ffffff; --sunk:#efeae2; --ink:#2a211d; --muted:#6c615a; --line:#e0d8cd;
+  --accent:#a8352b; --accent-ink:#ffffff; --accent-soft:#f5e2df; --mark:#f3d27a;
+  --ok:#2a8550; --ok-soft:#e1f1e6; --ng:#c2463a; --ng-soft:#f8e3df;
+  --f-head:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Noto Sans JP",sans-serif;
+  --f-body:"Noto Sans JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#161210; --surface:#211b18; --sunk:#1b1614; --ink:#efe7e2; --muted:#ab9f97; --line:#3a302b;
+  --accent:#ec8a7e; --accent-ink:#2a0d09; --accent-soft:#3d2320; --mark:#8a6d1f;
+  --ok:#6cce8e; --ok-soft:#1b3326; --ng:#f07c70; --ng-soft:#3a201d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#161210; --surface:#211b18; --sunk:#1b1614; --ink:#efe7e2; --muted:#ab9f97; --line:#3a302b;
+  --accent:#ec8a7e; --accent-ink:#2a0d09; --accent-soft:#3d2320; --mark:#8a6d1f;
+  --ok:#6cce8e; --ok-soft:#1b3326; --ng:#f07c70; --ng-soft:#3a201d; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.app{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px calc(88px + env(safe-area-inset-bottom,0px))}
+h1,h2,h3{font-family:var(--f-head);text-wrap:balance;line-height:1.35;margin:0}
+h1{font-size:1.3rem}
+h2{font-size:1.15rem}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0 14px}
+.top small{color:var(--muted);font-size:.8rem}
+.sync{font-size:.75rem;color:var(--muted)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+nav.tabs .in{display:grid;grid-template-columns:repeat(6,1fr);width:100%;max-width:640px}
+nav.tabs button{position:relative}nav.tabs .badge{position:absolute;top:0;left:calc(50% + 6px);margin:0}
+.streak{display:flex;align-items:center;gap:12px}
+.streak .fire{font-size:2.2rem;line-height:1}
+.streak .big{font-family:var(--f-head);font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
+.streak .sub{font-size:.8rem;color:var(--muted)}
+.streak .bc{margin-left:auto;text-align:center;border:1px solid var(--line);background:var(--sunk);border-radius:12px;padding:6px 10px;cursor:pointer;font:inherit;color:inherit}
+.streak .bc b{display:block;font-family:var(--f-head);font-size:1.15rem}
+.streak .bc span{font-size:.7rem;color:var(--muted);white-space:nowrap}
+.wrap1 td:first-child{white-space:normal}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bdg{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center;line-height:1.35}
+.bdg .e{font-size:1.9rem;display:block;line-height:1.2}
+.bdg b{display:block;font-size:.78rem}
+.bdg span{display:block;font-size:.66rem;color:var(--muted)}
+.bdg.off .e{filter:grayscale(1);opacity:.35}
+.bdg.off b{color:var(--muted)}
+.toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--bg);border-radius:14px;padding:10px 16px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-weight:700;text-align:center;max-width:92vw}
+.toast .e{font-size:1.6rem;display:block}
+.mockbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+.mockbar .tm{font-family:var(--f-head);font-weight:700;font-size:1.1rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.mockbar .tm.low{color:var(--ng)}
+.qgrid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.qgrid button{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:4px 0;font-size:.72rem;cursor:pointer;font-variant-numeric:tabular-nums}
+.qgrid button.done{background:var(--accent-soft);border-color:var(--accent)}
+.qgrid button.cur{outline:2px solid var(--accent)}
+.qgrid button.ok{background:var(--ok-soft);border-color:var(--ok)}
+.qgrid button.ng{background:var(--ng-soft);border-color:var(--ng)}
+.pass{font-family:var(--f-head);font-size:2rem;font-weight:700;text-align:center}
+.pass.ok{color:var(--ok)}.pass.ng{color:var(--ng)}
+details.rv{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+details.rv summary{cursor:pointer;font-size:.9rem;line-height:1.5}
+details.rv[open] summary{margin-bottom:8px}
+.rk .nm small{display:block;font-size:.72rem;color:var(--muted);font-weight:400}
+.rk{display:flex;flex-direction:column;gap:6px;list-style:none;margin:0;padding:0}
+.rk li{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.rk li.me{border:2px solid var(--accent);background:var(--accent-soft)}
+.rk .no{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--sunk);font-variant-numeric:tabular-nums}
+.rk .no.g1{background:#e9c046;color:#3a2c00}.rk .no.g2{background:#c3c8cc;color:#1e2a27}.rk .no.g3{background:#d39a6a;color:#2f1a08}
+.rk .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.rk .sc{text-align:right;font-variant-numeric:tabular-nums;line-height:1.3}
+.rk .sc b{font-family:var(--f-head);font-size:1.15rem}
+.rk .sc span{display:block;font-size:.72rem;color:var(--muted)}
+
+nav.tabs button{background:none;border:0;padding:6px 2px;border-radius:10px;font-size:.72rem;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+nav.tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+nav.tabs button[aria-current="page"]{color:var(--accent);font-weight:700}
+.badge{background:var(--ng);color:#fff;border-radius:999px;font-size:.65rem;padding:0 6px;margin-left:2px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stat .lab{font-size:.78rem;color:var(--muted);letter-spacing:.04em}
+.stat .num{font-family:var(--f-head);font-size:2rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
+.stat .num small{font-size:.9rem;color:var(--muted);font-weight:500}
+.stat.main{grid-column:1/-1;background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.stat.main .lab,.stat.main .num small{color:inherit;opacity:.85}
+.field-label{font-size:.8rem;color:var(--muted);margin:0 0 6px;letter-spacing:.04em}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--line);background:var(--sunk);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:.9rem}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mode button{border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:12px;text-align:left;cursor:pointer}
+.mode button b{display:block;font-family:var(--f-head);font-size:1.02rem}
+.mode button span{font-size:.78rem;color:var(--muted);line-height:1.4;display:block}
+.mode button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:700;cursor:pointer;background:var(--accent);color:var(--accent-ink);font-size:1rem;width:100%}
+.btn.ghost{background:var(--sunk);color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;gap:8px}
+.row>*{flex:1}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.82rem;color:var(--muted)}
+.chip{display:inline-block;border-radius:6px;padding:1px 8px;font-size:.75rem;background:var(--accent-soft);color:var(--ink);white-space:nowrap}
+.chip.date{background:var(--sunk)}
+.progress{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent)}
+.stem{font-size:1.05rem;font-weight:500}
+.stem b{font-weight:700}
+.opts{display:flex;flex-direction:column;gap:8px;list-style:none;margin:0;padding:0}
+.opt{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;cursor:pointer;line-height:1.6}
+.opt .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--sunk);display:grid;place-items:center;font-weight:700;font-size:.85rem;font-variant-numeric:tabular-nums}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-pressed="true"] .n{background:var(--accent);color:var(--accent-ink)}
+.res{border-radius:12px;padding:10px 12px;border:1px solid var(--line);background:var(--surface)}
+.res.ok{background:var(--ok-soft);border-color:transparent}
+.res.ng{background:var(--ng-soft);border-color:transparent}
+.res .line{display:flex;gap:6px}
+.res .fix{margin-top:4px;font-size:.92rem}
+.res .fix b{color:var(--ng)}
+.res.ok .fix{color:var(--muted)}
+.res .you{font-size:.72rem;color:var(--muted);margin-left:auto;white-space:nowrap}
+.verdict{font-family:var(--f-head);font-size:1.15rem;font-weight:700}
+.verdict .v-ok{color:var(--ok)} .verdict .v-ng{color:var(--ng)}
+.point{background:var(--sunk);border-radius:12px;padding:10px 12px;font-size:.93rem}
+.point b{font-family:var(--f-head)}
+.ox{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ox button{font-family:var(--f-head);font-size:2.2rem;font-weight:700;border:2px solid var(--line);background:var(--surface);border-radius:14px;padding:10px;cursor:pointer;line-height:1.2}
+.ox button span{display:block;font-size:.8rem;font-family:var(--f-body);color:var(--muted);font-weight:500}
+.term{background:linear-gradient(transparent 62%,var(--mark) 62%);border:0;padding:0;cursor:pointer;font:inherit;color:inherit;text-align:inherit;display:inline}
+.list{display:flex;flex-direction:column;gap:8px;list-style:none;margin:0;padding:0}
+.item{width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.item .meta{display:flex;gap:6px;align-items:center;font-size:.75rem;color:var(--muted)}
+.item .t{font-size:.93rem;line-height:1.5}
+.empty{color:var(--muted);text-align:center;padding:24px 8px;font-size:.92rem}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.88rem;font-variant-numeric:tabular-nums}
+th,td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:.75rem;color:var(--muted);font-weight:500}
+.bar{display:inline-block;height:8px;border-radius:4px;background:var(--accent);vertical-align:middle;margin-left:6px}
+.chart text{fill:var(--muted);font-size:11px;font-family:var(--f-body)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .b{fill:var(--accent)}
+.chart .lbl{fill:var(--ink);font-size:10px;font-weight:700}
+.search{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;font:inherit;color:var(--ink)}
+dl.gl{margin:0;display:flex;flex-direction:column;gap:10px}
+dl.gl div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+dl.gl dt{font-family:var(--f-head);font-weight:700}
+dl.gl dd{margin:2px 0 0;font-size:.92rem;color:var(--ink)}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:40}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;background:var(--surface);border-radius:18px 18px 0 0;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));max-width:640px;margin:0 auto;box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+.sheet h3{font-size:1.15rem;margin-bottom:6px}
+.sheet p{margin:0 0 14px}
+.note{font-size:.8rem;color:var(--muted)}
+.twocol{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mini{background:var(--sunk);border-radius:10px;padding:8px;text-align:center}
+.mini b{display:block;font-family:var(--f-head);font-size:1.2rem;font-variant-numeric:tabular-nums}
+.mini span{font-size:.72rem;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.fade{animation:fd .2s ease-out}@keyframes fd{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div><h1>JLPT合格ドリル</h1><small>日本語能力試験 N2・N1 ・ 全<span id="qcount">0</span>問</small></div>
+    <span class="sync" id="sync">読み込み中…</span>
+  </header>
+  <main id="view" aria-live="polite"></main>
+</div>
+<nav class="tabs" aria-label="メニュー"><div class="in">
+  <button data-tab="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>ホーム</button>
+  <button data-tab="quiz"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>解く</button>
+  <button data-tab="miss"><svg viewBox="0 0 24 24"><path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17v.5"/></svg><span>間違えた<span id="missBadge"></span></span></button>
+  <button data-tab="stats"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>成績</button>
+  <button data-tab="rank"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg>ランキング</button>
+  <button data-tab="words"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg>文法</button>
+</div></nav>
+<div id="sheet" hidden></div>
+
+<script id="data" type="application/json">{"questions":[{"id":"N2-001","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"彼はその問題を«容易»に解いた。","topic":"漢字読み：彼はその問題を容易に解いた。","opts":["よういん","よおい","ようえき","ようい"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"容易（ようい）＝簡単なこと。","weak":false,"date":"新作","kind":""},{"id":"N2-002","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"長い説明は«省略»します。","topic":"漢字読み：長い説明は省略します。","opts":["せいりゃく","しょうりゃく","しょうりょく","せいりょく"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"省略（しょうりゃく）＝一部をはぶくこと。","weak":false,"date":"新作","kind":""},{"id":"N2-003","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"台所はいつも«清潔»にしておきたい。","topic":"漢字読み：台所はいつも清潔にしておきたい。","opts":["せいげつ","せいけつ","せいけち","しょうけつ"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"清潔（せいけつ）＝よごれがなく、きれいなこと。","weak":false,"date":"新作","kind":""},{"id":"N2-004","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"最近、彼から«頻繁»に連絡が来る。","topic":"漢字読み：最近、彼から頻繁に連絡が来る。","opts":["びんぱん","ひんはん","ひんぱん","ひんばん"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"頻繁（ひんぱん）＝何度も、しばしば。","weak":false,"date":"新作","kind":""},{"id":"N2-005","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"先生は学生に参加を«促した»。","topic":"漢字読み：先生は学生に参加を促した。","opts":["うながした","ほどこした","もよおした","うるおした"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"促す（うながす）＝早くするように勧める。","weak":false,"date":"新作","kind":""},{"id":"N2-006","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"梅雨の時期は«湿気»が多い。","topic":"漢字読み：梅雨の時期は湿気が多い。","opts":["しっき","しっけ","しつき","しめけ"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"湿気（しっけ）＝空気中の水分。","weak":false,"date":"新作","kind":""},{"id":"N2-007","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"若者の読書離れの«傾向»が続いている。","topic":"漢字読み：若者の読書離れの傾向が続いている。","opts":["けいこう","けいこ","かいこう","けいごう"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"傾向（けいこう）＝物事がある方向に向かうこと。","weak":false,"date":"新作","kind":""},{"id":"N2-008","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"会社は来年の予算を«削る»ことにした。","topic":"漢字読み：会社は来年の予算を削ることにした。","opts":["けずる","くずる","はぶる","さける"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"削る（けずる）＝減らす。","weak":false,"date":"新作","kind":""},{"id":"N2-009","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"留学は«貴重»な経験になった。","topic":"漢字読み：留学は貴重な経験になった。","opts":["きちょう","きっちょう","きじゅう","きちゅう"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"貴重（きちょう）＝とても大切なこと。","weak":false,"date":"新作","kind":""},{"id":"N2-010","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"彼は書類の確認を«怠った»。","topic":"漢字読み：彼は書類の確認を怠った。","opts":["おこたった","おとった","あなどった","なまけった"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"怠る（おこたる）＝やるべきことをしない。","weak":false,"date":"新作","kind":""},{"id":"N2-011","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"お客様の苦情には«迅速»に対応してください。","topic":"漢字読み：お客様の苦情には迅速に対応してください。","opts":["しんそく","しゅんそく","じんぞく","じんそく"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"迅速（じんそく）＝とても速いこと。","weak":false,"date":"新作","kind":""},{"id":"N2-012","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"兄と私は意見が«異なる»。","topic":"漢字読み：兄と私は意見が異なる。","opts":["こなる","いなる","ことはる","ことなる"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"異なる（ことなる）＝違う。","weak":false,"date":"新作","kind":""},{"id":"N2-013","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"彼は病気を«克服»して、仕事に戻った。","topic":"漢字読み：彼は病気を克服して、仕事に戻った。","opts":["かくふく","こくふく","こっぷく","こくぶく"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"克服（こくふく）＝困難に打ち勝つこと。","weak":false,"date":"新作","kind":""},{"id":"N2-014","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"交通費は会社が«負担»します。","topic":"漢字読み：交通費は会社が負担します。","opts":["ぶたん","ふだん","ふえん","ふたん"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"負担（ふたん）＝費用や仕事を引き受けること。","weak":false,"date":"新作","kind":""},{"id":"N2-015","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"出かける前に机の上を«片付けた»。","topic":"漢字読み：出かける前に机の上を片付けた。","opts":["かたつけた","へんづけた","かたずけた","かたづけた"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"片付ける（かたづける）＝整理する。「ず」ではなく「づ」。","weak":false,"date":"新作","kind":""},{"id":"N2-016","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"彼女は«柔軟»な考え方をする人だ。","topic":"漢字読み：彼女は柔軟な考え方をする人だ。","opts":["にゅうなん","じゅうねん","ゆうなん","じゅうなん"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"柔軟（じゅうなん）＝考え方がやわらかいこと。","weak":false,"date":"新作","kind":""},{"id":"N2-017","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"若い選手が世界記録に«挑んだ»。","topic":"漢字読み：若い選手が世界記録に挑んだ。","opts":["いどんだ","からんだ","はげんだ","のぞんだ"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"挑む（いどむ）＝立ち向かう。","weak":false,"date":"新作","kind":""},{"id":"N2-018","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"意見があれば«率直»に言ってください。","topic":"漢字読み：意見があれば率直に言ってください。","opts":["そつちょく","りっちょく","そっちょく","りつじき"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"率直（そっちょく）＝思ったことをそのまま言うこと。","weak":false,"date":"新作","kind":""},{"id":"N2-019","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"事故のため、高速道路で«渋滞»が起きている。","topic":"漢字読み：事故のため、高速道路で渋滞が起きている。","opts":["じゅうたい","しゅたい","じゅたい","しゅうたい"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"渋滞（じゅうたい）＝車が進まない状態。","weak":false,"date":"新作","kind":""},{"id":"N2-020","lv":"N2","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"この町の人口は年々«減少»している。","topic":"漢字読み：この町の人口は年々減少している。","opts":["げんしょ","げんしょう","かんしょう","げんじょう"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"減少（げんしょう）＝減ること。","weak":false,"date":"新作","kind":""},{"id":"N2-021","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"コンビニで電気代を«はらった»。","topic":"表記：コンビニで電気代をはらった。","opts":["仏った","抜った","祓った","払った"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"払う（はらう）。「仏」「抜」と形が似ているので注意。","weak":false,"date":"新作","kind":""},{"id":"N2-022","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"明日までにレポートを«ていしゅつ»してください。","topic":"表記：明日までにレポートをていしゅつしてください。","opts":["程出","堤出","提出","定出"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"提出（ていしゅつ）。","weak":false,"date":"新作","kind":""},{"id":"N2-023","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"出発の時間をもう一度«かくにん»した。","topic":"表記：出発の時間をもう一度かくにんした。","opts":["確任","確認","確仁","確忍"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"確認（かくにん）。","weak":false,"date":"新作","kind":""},{"id":"N2-024","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"旅行の間、犬を友人に«あずけた»。","topic":"表記：旅行の間、犬を友人にあずけた。","opts":["須けた","頂けた","預けた","頒けた"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"預ける（あずける）。","weak":false,"date":"新作","kind":""},{"id":"N2-025","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"電車の«せいかく»な到着時間を調べた。","topic":"表記：電車のせいかくな到着時間を調べた。","opts":["正確","性格","正格","生確"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"正確（せいかく）＝まちがいがないこと。性格は人の性質。","weak":false,"date":"新作","kind":""},{"id":"N2-026","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"新しい商品は客から高い«ひょうか»を受けた。","topic":"表記：新しい商品は客から高いひょうかを受けた。","opts":["票価","表価","評価","評可"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"評価（ひょうか）。","weak":false,"date":"新作","kind":""},{"id":"N2-027","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"突然の停電で、駅は«こんらん»した。","topic":"表記：突然の停電で、駅はこんらんした。","opts":["根乱","困乱","混乱","混卵"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"混乱（こんらん）。","weak":false,"date":"新作","kind":""},{"id":"N2-028","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"プレゼントをきれいな紙で«つつんだ»。","topic":"表記：プレゼントをきれいな紙でつつんだ。","opts":["包んだ","砲んだ","泡んだ","抱んだ"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"包む（つつむ）。","weak":false,"date":"新作","kind":""},{"id":"N2-029","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"日本は多くの車を«ゆしゅつ»している。","topic":"表記：日本は多くの車をゆしゅつしている。","opts":["愉出","論出","輪出","輸出"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"輸出（ゆしゅつ）。「輪」と似ているので注意。","weak":false,"date":"新作","kind":""},{"id":"N2-030","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"«かんきょう»問題について話し合った。","topic":"表記：かんきょう問題について話し合った。","opts":["環鏡","還境","還鏡","環境"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"環境（かんきょう）。","weak":false,"date":"新作","kind":""},{"id":"N2-031","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"新しい部屋の«けいやく»をした。","topic":"表記：新しい部屋のけいやくをした。","opts":["契役","計約","契約","啓約"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"契約（けいやく）。","weak":false,"date":"新作","kind":""},{"id":"N2-032","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"夜になって、体が«ひえて»きた。","topic":"表記：夜になって、体がひえてきた。","opts":["鈴えて","冷えて","零えて","令えて"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"冷える（ひえる）。","weak":false,"date":"新作","kind":""},{"id":"N2-033","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"台風で農作物に大きな«そんがい»が出た。","topic":"表記：台風で農作物に大きなそんがいが出た。","opts":["損割","損外","尊害","損害"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"損害（そんがい）。","weak":false,"date":"新作","kind":""},{"id":"N2-034","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"製品の«ほしょう»書をなくしてしまった。","topic":"表記：製品のほしょう書をなくしてしまった。","opts":["保証","補償","保正","保障"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"保証書（ほしょうしょ）は品質を約束する書類。補償は損害のつぐない、保障は安全などを守ること。","weak":false,"date":"新作","kind":""},{"id":"N2-035","lv":"N2","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"会議の前に机といすを«ならべた»。","topic":"表記：会議の前に机といすをならべた。","opts":["並べた","列べた","双べた","比べた"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"並べる（ならべる）。比べるは「くらべる」。","weak":false,"date":"新作","kind":""},{"id":"N2-036","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"雨が降りそうなので、傘を（　）おいた。","topic":"文脈規定：雨が降りそうなので、傘を（　）おいた。","opts":["用意して","整って","準じて","備わって"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"用意する＝前もって準備する。","weak":false,"date":"新作","kind":""},{"id":"N2-037","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"彼女は（　）な性格で、誰とでもすぐ仲良くなる。","topic":"文脈規定：彼女は（　）な性格で、誰とでもすぐ仲良くなる。","opts":["社交的","消極的","頑固","神経質"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"社交的＝人とつきあうのが上手なこと。","weak":false,"date":"新作","kind":""},{"id":"N2-038","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"新しい仕事にも、ようやく（　）きた。","topic":"文脈規定：新しい仕事にも、ようやく（　）きた。","opts":["慣れて","収まって","届いて","通じて"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"慣れる＝何度もして、自然にできるようになる。","weak":false,"date":"新作","kind":""},{"id":"N2-039","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"この薬は（　）が早いので、すぐに痛みが止まる。","topic":"文脈規定：この薬は（　）が早いので、すぐに痛みが止まる。","opts":["手応え","見込み","心当たり","効き目"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"効き目（ききめ）＝薬などのききぐあい。","weak":false,"date":"新作","kind":""},{"id":"N2-040","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"説明が（　）で、何を言いたいのか分からない。","topic":"文脈規定：説明が（　）で、何を言いたいのか分からない。","opts":["丁寧","明確","あいまい","正確"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"あいまい＝はっきりしないこと。","weak":false,"date":"新作","kind":""},{"id":"N2-041","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"選手たちは優勝を目指して、毎日（　）練習している。","topic":"文脈規定：選手たちは優勝を目指して、毎日（　）練習している。","opts":["適当に","熱心に","気軽に","退屈に"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"熱心に＝一生懸命に。","weak":false,"date":"新作","kind":""},{"id":"N2-042","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"会議の（　）は、来週の月曜日に決まった。","topic":"文脈規定：会議の（　）は、来週の月曜日に決まった。","opts":["日程","用途","手順","締切"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"日程＝いつ何をするかの予定。","weak":false,"date":"新作","kind":""},{"id":"N2-043","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"夜遅くまで働いたので、（　）疲れてしまった。","topic":"文脈規定：夜遅くまで働いたので、（　）疲れてしまった。","opts":["うっかり","すっかり","はっきり","しっかり"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"すっかり＝完全に。","weak":false,"date":"新作","kind":""},{"id":"N2-044","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"部屋が（　）いて、何がどこにあるか分からない。","topic":"文脈規定：部屋が（　）いて、何がどこにあるか分からない。","opts":["揃って","整って","片付いて","散らかって"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"散らかる＝物があちこちにあって、きたない状態になる。","weak":false,"date":"新作","kind":""},{"id":"N2-045","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"彼は失敗しても（　）、何度も挑戦した。","topic":"文脈規定：彼は失敗しても（　）、何度も挑戦した。","opts":["頼らず","迷わず","怠けず","あきらめず"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"あきらめずに挑戦する、が自然。","weak":false,"date":"新作","kind":""},{"id":"N2-046","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"料理に塩を（　）入れすぎてしまった。","topic":"文脈規定：料理に塩を（　）入れすぎてしまった。","opts":["じっくり","さっぱり","うっかり","ぐっすり"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"うっかり＝注意が足りず、まちがえてしまう様子。","weak":false,"date":"新作","kind":""},{"id":"N2-047","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"台風の（　）で、電車が止まった。","topic":"文脈規定：台風の（　）で、電車が止まった。","opts":["反響","印象","効果","影響"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"影響＝ほかのものに変化を起こす力。","weak":false,"date":"新作","kind":""},{"id":"N2-048","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"申込書に必要事項を（　）してください。","topic":"文脈規定：申込書に必要事項を（　）してください。","opts":["記憶","記念","記録","記入"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"記入＝書類に書き入れること。","weak":false,"date":"新作","kind":""},{"id":"N2-049","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"彼の話はいつも（　）が長くて、結論がなかなか出ない。","topic":"文脈規定：彼の話はいつも（　）が長くて、結論がなかなか出ない。","opts":["肩書き","下書き","前置き","箇条書き"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"前置き＝本題に入る前の話。","weak":false,"date":"新作","kind":""},{"id":"N2-050","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"彼女は語学の（　）があり、3か国語を話す。","topic":"文脈規定：彼女は語学の（　）があり、3か国語を話す。","opts":["本能","機能","性能","才能"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"才能＝生まれつきの、すぐれた能力。","weak":false,"date":"新作","kind":""},{"id":"N2-051","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"古い家を（　）して、カフェとして使っている。","topic":"文脈規定：古い家を（　）して、カフェとして使っている。","opts":["改正","改装","改善","改定"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"改装＝建物の内部や外観を作りかえること。","weak":false,"date":"新作","kind":""},{"id":"N2-052","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"道が（　）しているので、車の運転に気をつけてください。","topic":"文脈規定：道が（　）しているので、車の運転に気をつけてください…","opts":["冷凍","結晶","凝固","凍結"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"凍結（とうけつ）＝こおりつくこと。","weak":false,"date":"新作","kind":""},{"id":"N2-053","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"給料が上がらないことに、社員たちは（　）を持っている。","topic":"文脈規定：給料が上がらないことに、社員たちは（　）を持っている…","opts":["不足","不順","不振","不満"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"不満を持つ＝満足していない気持ちがある。","weak":false,"date":"新作","kind":""},{"id":"N2-054","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"試験に合格して、（　）した。","topic":"文脈規定：試験に合格して、（　）した。","opts":["ぼうっと","ぞっと","むっと","ほっと"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"ほっとする＝安心する。","weak":false,"date":"新作","kind":""},{"id":"N2-055","lv":"N2","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"この地域は人口が（　）減っている。","topic":"文脈規定：この地域は人口が（　）減っている。","opts":["年々","次々","別々","方々"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"年々（ねんねん）＝毎年。","weak":false,"date":"新作","kind":""},{"id":"N2-056","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"彼の説明は«ややこしい»。","topic":"言い換え類義：彼の説明はややこしい。","opts":["退屈だ","正確だ","複雑だ","簡単だ"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"ややこしい＝複雑で分かりにくい。","weak":false,"date":"新作","kind":""},{"id":"N2-057","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"会議は«ただちに»始まった。","topic":"言い換え類義：会議はただちに始まった。","opts":["すぐに","ゆっくり","予定どおり","突然"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"ただちに＝すぐに。","weak":false,"date":"新作","kind":""},{"id":"N2-058","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"トラックで荷物を«運搬»する。","topic":"言い換え類義：トラックで荷物を運搬する。","opts":["預ける","包む","運ぶ","捨てる"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"運搬（うんぱん）＝運ぶこと。","weak":false,"date":"新作","kind":""},{"id":"N2-059","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"彼は«たびたび»遅刻する。","topic":"言い換え類義：彼はたびたび遅刻する。","opts":["何度も","必ず","少し","一度だけ"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"たびたび＝何度も。","weak":false,"date":"新作","kind":""},{"id":"N2-060","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"«あいにく»雨が降ってきた。","topic":"言い換え類義：あいにく雨が降ってきた。","opts":["急に","少し","やはり","運悪く"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"あいにく＝都合が悪いことに。","weak":false,"date":"新作","kind":""},{"id":"N2-061","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"この仕事は«手間がかかる»。","topic":"言い換え類義：この仕事は手間がかかる。","opts":["危険だ","給料が高い","人気がある","時間と労力が必要だ"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"手間がかかる＝時間や労力が必要だ。","weak":false,"date":"新作","kind":""},{"id":"N2-062","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"彼女は私を見て«にっこりした»。","topic":"言い換え類義：彼女は私を見てにっこりした。","opts":["笑った","怒った","泣いた","驚いた"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"にっこりする＝うれしそうに笑う。","weak":false,"date":"新作","kind":""},{"id":"N2-063","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"まず«おおまかな»計画を立てよう。","topic":"言い換え類義：まずおおまかな計画を立てよう。","opts":["大きな","詳しい","新しい","だいたいの"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"おおまか＝細かいところまで考えない、だいたいの。","weak":false,"date":"新作","kind":""},{"id":"N2-064","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"雨のため、作業を«中断»した。","topic":"言い換え類義：雨のため、作業を中断した。","opts":["続けた","途中でやめた","始めた","終えた"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"中断＝途中でやめること。","weak":false,"date":"新作","kind":""},{"id":"N2-065","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"名前を呼ばれると、学生たちは«いっせいに»立ち上がった。","topic":"言い換え類義：名前を呼ばれると、学生たちはいっせいに立ち上がった。","opts":["一人ずつ","ゆっくりと","急いで","みんな同時に"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"いっせいに＝みんな同時に。","weak":false,"date":"新作","kind":""},{"id":"N2-066","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"毎日同じ話を聞かされて、«うんざりした»。","topic":"言い換え類義：毎日同じ話を聞かされて、うんざりした。","opts":["感心した","驚いた","嫌になった","安心した"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"うんざりする＝あきて嫌になる。","weak":false,"date":"新作","kind":""},{"id":"N2-067","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"いつ終わるのか、まったく«見当がつかない»。","topic":"言い換え類義：いつ終わるのか、まったく見当がつかない。","opts":["覚えていない","予想できない","見えない","決められない"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"見当がつかない＝予想できない。","weak":false,"date":"新作","kind":""},{"id":"N2-068","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"平日の昼間、店は«ひっそりとしていた»。","topic":"言い換え類義：平日の昼間、店はひっそりとしていた。","opts":["汚かった","静かだった","にぎやかだった","明るかった"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"ひっそり＝静かで人の気配がない様子。","weak":false,"date":"新作","kind":""},{"id":"N2-069","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"予算が足りないので、計画を«見直す»ことにした。","topic":"言い換え類義：予算が足りないので、計画を見直すことにした。","opts":["実行する","発表する","もう一度検討する","あきらめる"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"見直す＝もう一度よく調べて考える。","weak":false,"date":"新作","kind":""},{"id":"N2-070","lv":"N2","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"新しいゲームは«たちまち»売り切れた。","topic":"言い換え類義：新しいゲームはたちまち売り切れた。","opts":["やっと","すぐに","少しずつ","結局"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"たちまち＝あっという間に。","weak":false,"date":"新作","kind":""},{"id":"N2-071","lv":"N2","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"保つ","topic":"用法：保つ","opts":["毎朝、駅まで自転車を保って行く。","宿題を保ってから寝た。","友達に本を保ってもらった。","部屋の温度を一定に保つようにしている。"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"保つ（たもつ）＝同じ状態を続ける。","weak":false,"date":"新作","kind":""},{"id":"N2-072","lv":"N2","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"手軽","topic":"用法：手軽","opts":["電子レンジで手軽に作れる料理を紹介する。","彼は手軽な性格で、誰にでも優しい。","手軽に考えた結果、大きな失敗をした。","手軽な雨が一日中降っていた。"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"手軽＝簡単で、手間がかからないこと。","weak":false,"date":"新作","kind":""},{"id":"N2-073","lv":"N2","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"さっそく","topic":"用法：さっそく","opts":["彼はさっそく会社に遅刻する。","昨日はさっそく寝てしまった。","新しいパソコンが届いたので、さっそく使ってみた。","さっそく雨が止んで、空が明るくなった。"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"さっそく＝何かがあって、すぐに（自分の意志で）行動する様子。","weak":false,"date":"新作","kind":""},{"id":"N2-074","lv":"N2","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"余計","topic":"用法：余計","opts":["余計な天気で、洗濯物がよく乾いた。","余計なことを言って、彼女を怒らせてしまった。","試験まで余計の時間がたくさんある。","お金を余計して旅行に行った。"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"余計＝必要以上で、ないほうがいいこと。","weak":false,"date":"新作","kind":""},{"id":"N2-075","lv":"N2","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"取り扱う","topic":"用法：取り扱う","opts":["彼の意見を取り扱って反対した。","疲れたので、少し取り扱って休んだ。","この店では外国の食品も取り扱っている。","駅で友達を取り扱って待っていた。"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"取り扱う＝商品として売る、物を扱う。","weak":false,"date":"新作","kind":""},{"id":"N2-076","lv":"N2","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"かえって","topic":"用法：かえって","opts":["宿題をかえって忘れてしまった。","かえって明日は晴れるでしょう。","薬を飲んだら、かえって具合が悪くなった。","彼はかえって背が高い。"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"かえって＝予想とは反対の結果になる様子。","weak":false,"date":"新作","kind":""},{"id":"N2-077","lv":"N2","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"見逃す","topic":"用法：見逃す","opts":["医者に体を見逃してもらった。","楽しみにしていたドラマを見逃してしまった。","空港で友達を見逃して、手を振った。","窓から景色を見逃しながらお茶を飲んだ。"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"見逃す＝見る機会をのがす。見送る、診てもらう、眺めるとの違いに注意。","weak":false,"date":"新作","kind":""},{"id":"N2-078","lv":"N2","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"深刻","topic":"用法：深刻","opts":["深刻な海で泳ぐのは危ない。","水不足が深刻な問題になっている。","深刻な料理なので、時間がかかる。","彼は深刻に笑っていた。"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"深刻＝状態が重大で、心配なこと。","weak":false,"date":"新作","kind":""},{"id":"N2-079","lv":"N2","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"せめて","topic":"用法：せめて","opts":["せめて彼は会社を辞めてしまった。","忙しくても、せめて週に一度は運動したい。","宿題はせめて終わった。","せめて明日は雨が降った。"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"せめて＝十分ではないが、少なくともこれだけは。","weak":false,"date":"新作","kind":""},{"id":"N2-080","lv":"N2","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"ふさわしい","topic":"用法：ふさわしい","opts":["このかばんはふさわしいので、持ちにくい。","面接にふさわしい服装で来てください。","試験にふさわしく合格した。","毎日ふさわしく運動している。"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"ふさわしい＝その場や目的によく合っている。","weak":false,"date":"新作","kind":""},{"id":"N2-081","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"雨が降っている（　）、試合は行われた。","topic":"文法：雨が降っている（　）、試合は行われた。","opts":["おかげで","からといって","にもかかわらず","ばかりか"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜にもかかわらず＝〜なのに。","weak":false,"date":"新作","kind":""},{"id":"N2-082","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"先生のアドバイスの（　）、合格できた。","topic":"文法：先生のアドバイスの（　）、合格できた。","opts":["せいで","くせに","おかげで","わりに"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜おかげで＝よい結果の原因。悪い結果なら「せいで」。","weak":false,"date":"新作","kind":""},{"id":"N2-083","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"このレストランは値段の（　）、料理がおいしい。","topic":"文法：このレストランは値段の（　）、料理がおいしい。","opts":["ばかりに","かわりに","わりに","うえに"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜わりに＝〜から予想されるのとはちがって。","weak":false,"date":"新作","kind":""},{"id":"N2-084","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"心配の（　）、夜も眠れなかった。","topic":"文法：心配の（　）、夜も眠れなかった。","opts":["あまり","かぎりに","とおりに","ついでに"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"〜のあまり＝〜の程度がとても大きくて。","weak":false,"date":"新作","kind":""},{"id":"N2-085","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"彼は英語（　）、中国語も話せる。","topic":"文法：彼は英語（　）、中国語も話せる。","opts":["に限って","ばかりか","にかけては","にしては"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"〜ばかりか…も＝〜だけでなく…も。","weak":false,"date":"新作","kind":""},{"id":"N2-086","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"大人の（　）、こんなことも分からないのか。","topic":"文法：大人の（　）、こんなことも分からないのか。","opts":["くせに","ことに","ほどに","うちに"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"〜くせに＝〜なのに（非難の気持ち）。","weak":false,"date":"新作","kind":""},{"id":"N2-087","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"料理が冷めない（　）、どうぞ召し上がってください。","topic":"文法：料理が冷めない（　）、どうぞ召し上がってください。","opts":["ところに","までに","うちに","あいだ"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜ないうちに＝その状態が変わる前に。","weak":false,"date":"新作","kind":""},{"id":"N2-088","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"明日は大雨になる（　）がある。","topic":"文法：明日は大雨になる（　）がある。","opts":["わけ","はず","おそれ","もの"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜おそれがある＝悪いことが起こる可能性がある。","weak":false,"date":"新作","kind":""},{"id":"N2-089","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"社長にメールを送った（　）、すぐに返事が来た。","topic":"文法：社長にメールを送った（　）、すぐに返事が来た。","opts":["ところ","ついでに","あげく","ものの"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"〜たところ＝〜したら、（その結果）。","weak":false,"date":"新作","kind":""},{"id":"N2-090","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"何度も話し合った（　）、やっと結論が出た。","topic":"文法：何度も話し合った（　）、やっと結論が出た。","opts":["ばかりに","とたんに","すえに","ところで"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜たすえに＝いろいろあって、最後に。","weak":false,"date":"新作","kind":""},{"id":"N2-091","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"彼の気持ちも分からない（　）が、やはり賛成はできない。","topic":"文法：彼の気持ちも分からない（　）が、やはり賛成はできない…","opts":["にすぎない","どころではない","ことはない","わけにはいかない"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜ないことはない＝まったく〜ないわけではない。","weak":false,"date":"新作","kind":""},{"id":"N2-092","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"約束した以上、守らない（　）。","topic":"文法：約束した以上、守らない（　）。","opts":["ことはない","にすぎない","しかない","わけにはいかない"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"〜ないわけにはいかない＝〜しなければならない。","weak":false,"date":"新作","kind":""},{"id":"N2-093","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"試験の前なので、遊んでいる（　）ではない。","topic":"文法：試験の前なので、遊んでいる（　）ではない。","opts":["ため","どころ","もの","こと"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"〜どころではない＝〜する余裕はない。","weak":false,"date":"新作","kind":""},{"id":"N2-094","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"この仕事は経験（　）、誰でも応募できる。","topic":"文法：この仕事は経験（　）、誰でも応募できる。","opts":["に沿って","に応じて","をめぐって","を問わず"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"〜を問わず＝〜に関係なく。","weak":false,"date":"新作","kind":""},{"id":"N2-095","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"年齢（　）料金が変わる。","topic":"文法：年齢（　）料金が変わる。","opts":["にかかわらず","を問わず","をこめて","に応じて"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"〜に応じて＝〜に合わせて変わる。","weak":false,"date":"新作","kind":""},{"id":"N2-096","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"新しい法律（　）、議論が続いている。","topic":"文法：新しい法律（　）、議論が続いている。","opts":["に先立って","をめぐって","にとって","にかけて"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"〜をめぐって＝〜について（議論・対立など）。","weak":false,"date":"新作","kind":""},{"id":"N2-097","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"心（　）作ったケーキです。","topic":"文法：心（　）作ったケーキです。","opts":["をもとに","をはじめ","をこめて","を通じて"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"心をこめて＝気持ちを入れて。","weak":false,"date":"新作","kind":""},{"id":"N2-098","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"開会（　）、市長があいさつをした。","topic":"文法：開会（　）、市長があいさつをした。","opts":["に伴い","に反して","に比べ","に先立ち"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"〜に先立ち＝〜の前に。","weak":false,"date":"新作","kind":""},{"id":"N2-099","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"この小説は、実際にあった事件（　）書かれた。","topic":"文法：この小説は、実際にあった事件（　）書かれた。","opts":["に反して","をこめて","をもとに","にかけては"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜をもとに＝〜を材料・基礎にして。","weak":false,"date":"新作","kind":""},{"id":"N2-100","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"予想（　）、日本チームは試合に負けた。","topic":"文法：予想（　）、日本チームは試合に負けた。","opts":["に反して","に基づいて","にとって","に沿って"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"〜に反して＝〜とは逆に。","weak":false,"date":"新作","kind":""},{"id":"N2-101","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"人口の増加（　）、住宅が不足している。","topic":"文法：人口の増加（　）、住宅が不足している。","opts":["に伴い","をめぐり","を問わず","に先立ち"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"〜に伴い＝〜といっしょに変化して。","weak":false,"date":"新作","kind":""},{"id":"N2-102","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"料理の腕（　）、彼の右に出る者はいない。","topic":"文法：料理の腕（　）、彼の右に出る者はいない。","opts":["にしては","に限って","について","にかけては"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"〜にかけては＝〜については（いちばんだ）。","weak":false,"date":"新作","kind":""},{"id":"N2-103","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"値段が高い物が、必ずしも質がいい（　）。","topic":"文法：値段が高い物が、必ずしも質がいい（　）。","opts":["とは限らない","にすぎない","に違いない","ほかない"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"必ずしも〜とは限らない＝いつも〜というわけではない。","weak":false,"date":"新作","kind":""},{"id":"N2-104","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"あの店の前には長い列ができている。きっとおいしい（　）。","topic":"文法：あの店の前には長い列ができている。きっとおいしい（　…","opts":["にすぎない","とは限らない","わけがない","に違いない"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"きっと〜に違いない＝きっと〜だ。","weak":false,"date":"新作","kind":""},{"id":"N2-105","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"彼の言ったことは冗談（　）。気にしないで。","topic":"文法：彼の言ったことは冗談（　）。気にしないで。","opts":["どころではない","にすぎない","に限る","わけにはいかない"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"〜にすぎない＝ただ〜だけだ。","weak":false,"date":"新作","kind":""},{"id":"N2-106","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"疲れたときは、温泉に入る（　）。","topic":"文法：疲れたときは、温泉に入る（　）。","opts":["に沿う","に先立つ","に限る","に伴う"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜に限る＝〜がいちばんいい。","weak":false,"date":"新作","kind":""},{"id":"N2-107","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"電車が止まってしまったので、歩いて帰る（　）。","topic":"文法：電車が止まってしまったので、歩いて帰る（　）。","opts":["しかない","ことはない","わけがない","に違いない"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"〜しかない＝ほかに方法がない。","weak":false,"date":"新作","kind":""},{"id":"N2-108","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"あんなに優しい彼が、そんなひどいことを言う（　）。","topic":"文法：あんなに優しい彼が、そんなひどいことを言う（　）。","opts":["わけがない","しかない","に限る","ほかない"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"〜わけがない＝絶対に〜ない。","weak":false,"date":"新作","kind":""},{"id":"N2-109","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"一度引き受けた（　）、最後までやるべきだ。","topic":"文法：一度引き受けた（　）、最後までやるべきだ。","opts":["以上","くせに","ものの","わりに"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"〜以上＝〜のだから、当然。","weak":false,"date":"新作","kind":""},{"id":"N2-110","lv":"N2","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"説明書を読んだ（　）、使い方がよく分からない。","topic":"文法：説明書を読んだ（　）、使い方がよく分からない。","opts":["からには","ものの","うえは","以上"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"〜ものの＝〜けれども。","weak":false,"date":"新作","kind":""},{"id":"N2-111","lv":"N2","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"最近、駅前に新しい図書館ができた。以前の図書館は午後6時に閉まっていたが、新しい図書館は平日は夜9時まで開いている。仕事帰りに立ち寄れるようになり、利用者が大幅に増えたそうだ。ただ、週末は午後5時で閉まるので、注意が必要だ。\n\n新しい図書館について、正しいものはどれか。","topic":"読解：最近、駅前に新しい図書館ができた。以前の図書館は午後…","opts":["平日は夜9時まで利用できる。","週末も夜9時まで利用できる。","以前の図書館も夜9時まで開いていた。","以前より利用者が減った。"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"「平日は夜9時まで開いている」とある。週末は午後5時まで。","weak":false,"date":"新作","kind":""},{"id":"N2-112","lv":"N2","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"【お知らせ】10月から、ごみの出し方が変わります。燃えるごみは月曜日と木曜日、プラスチックは水曜日に出してください。ペットボトルはプラスチックとは別に、第2・第4金曜日に出してください。いずれも朝8時までにお願いします。\n\nペットボトルはいつ出せばよいか。","topic":"読解：【お知らせ】10月から、ごみの出し方が変わります。燃…","opts":["毎週水曜日の朝8時まで","第2・第4金曜日の朝8時まで","月曜日と木曜日の朝8時まで","毎週金曜日の夜"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"ペットボトルは「第2・第4金曜日」、時間は「朝8時まで」。","weak":false,"date":"新作","kind":""},{"id":"N2-113","lv":"N2","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"失敗を恐れて何もしない人がいる。しかし、何もしなければ失敗はしないが、成長もしない。失敗は、自分に足りないものを教えてくれる大切な機会である。大事なのは、失敗しないことではなく、失敗から何を学ぶかだ。\n\n筆者の考えに合うものはどれか。","topic":"読解：失敗を恐れて何もしない人がいる。しかし、何もしなけれ…","opts":["失敗しないことが最も大切だ。","失敗から何を学ぶかが大切だ。","失敗は成長と関係がない。","失敗しないように何もしないほうがいい。"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"最後の文「大事なのは…失敗から何を学ぶかだ」が筆者の主張。","weak":false,"date":"新作","kind":""},{"id":"N2-114","lv":"N2","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"田中様\n先日はお忙しい中、打ち合わせのお時間をいただき、ありがとうございました。ご提案いただいた内容を社内で検討し、来週の水曜日までにお返事いたします。なお、見積書は本日郵送いたしましたので、ご確認ください。\n\nこのメールを書いた人が、これからすることは何か。","topic":"読解：田中様","opts":["田中さんと打ち合わせをする。","来週の水曜日までに返事をする。","見積書の内容を確認する。","今日、見積書を郵送する。"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"見積書は「本日郵送いたしました」（もう送った）。これからするのは返事。","weak":false,"date":"新作","kind":""},{"id":"N2-115","lv":"N2","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"スマートフォンは便利だが、寝る前に使うと眠りが浅くなると言われている。画面の光が、眠気を起こすホルモンの働きを弱めるからだ。ぐっすり眠りたいなら、寝る1時間前には画面を見ないようにするとよい。\n\n寝る前にスマートフォンを使うとよくないのはなぜか。","topic":"読解：スマートフォンは便利だが、寝る前に使うと眠りが浅くな…","opts":["つい1時間以上使ってしまうから","電池がなくなってしまうから","目が疲れて痛くなるから","画面の光が、眠気を起こすホルモンの働きを弱めるから"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"「〜からだ」の文が理由を表している。","weak":false,"date":"新作","kind":""},{"id":"N2-116","lv":"N2","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"日本では、電車の中で電話で話すことはマナー違反とされている。周りの人に迷惑をかけないためだ。一方で、メールやメッセージを送ることは問題ないとされている。音が出ないからである。\n\n電車の中での電話がマナー違反とされるのはなぜか。","topic":"読解：日本では、電車の中で電話で話すことはマナー違反とされ…","opts":["周りの人の迷惑になるから","メールのほうが速いから","法律で禁止されているから","電車の中は電波が悪いから"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"「周りの人に迷惑をかけないためだ」とある。","weak":false,"date":"新作","kind":""},{"id":"N2-117","lv":"N2","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"当店では、ポイントカードをお持ちのお客様に、お買い物100円ごとに1ポイントを差し上げております。500ポイントたまると、500円分のお買い物券と交換できます。ただし、セール品はポイントの対象外です。\n\nこの文章の内容と合うものはどれか。","topic":"読解：当店では、ポイントカードをお持ちのお客様に、お買い物…","opts":["カードがなくても、ポイントがもらえる。","セール品を買っても、ポイントはもらえない。","1円ごとに1ポイントもらえる。","100ポイントで500円分のお買い物券と交換できる。"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"「セール品はポイントの対象外」とある。","weak":false,"date":"新作","kind":""},{"id":"N2-118","lv":"N2","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"若いころは、早く結果を出そうと急いでばかりいた。しかし、年を重ねるにつれて、時間をかけなければ分からないこともあると気づいた。木が育つのに何年もかかるように、人も焦らずゆっくり成長すればいいのだと思う。\n\n筆者が最も言いたいことは何か。","topic":"読解：若いころは、早く結果を出そうと急いでばかりいた。しか…","opts":["人は焦らず、時間をかけて成長すればよい。","年を取ると、もう成長できない。","木を育てるのは難しい。","若いうちに早く結果を出すべきだ。"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"最後の文が筆者の考え。","weak":false,"date":"新作","kind":""},{"id":"N2-119","lv":"N2","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"最近、自分で料理をせず、コンビニの弁当や総菜を買う人が増えている。忙しい人にとっては便利だが、同じものばかり食べると栄養が偏りやすい。選ぶときには、野菜が入ったものを加えるなど、バランスを考えることが大切だ。\n\n筆者がすすめていることは何か。","topic":"読解：最近、自分で料理をせず、コンビニの弁当や総菜を買う人…","opts":["毎日自分で料理をすること","コンビニで弁当を買わないこと","同じものを食べ続けること","栄養のバランスを考えて選ぶこと"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"「バランスを考えることが大切だ」とある。コンビニを使うこと自体は否定していない。","weak":false,"date":"新作","kind":""},{"id":"N2-120","lv":"N2","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"【市民プールのご案内】市民プールは、7月1日から8月31日まで営業します。営業時間は午前9時から午後5時までです。毎週月曜日は休みですが、月曜日が祝日の場合は、翌日の火曜日が休みになります。\n\n7月の祝日の月曜日、プールはどうなるか。","topic":"読解：【市民プールのご案内】市民プールは、7月1日から8月…","opts":["休みになる。","午後だけ営業する。","次の火曜日も営業する。","営業していて、次の火曜日が休みになる。"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"月曜日が祝日なら営業し、翌日の火曜日が休み。","weak":false,"date":"新作","kind":""},{"id":"N1-001","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"自分の過ちを認める«潔い»態度に感心した。","topic":"漢字読み：自分の過ちを認める潔い態度に感心した。","opts":["いさぎよい","けがらわしい","こころよい","いさましい"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"潔い（いさぎよい）＝思い切りがよく、ひきょうなところがない。","weak":false,"date":"新作","kind":""},{"id":"N1-002","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"建設費の一部を寄付金で«賄う»ことにした。","topic":"漢字読み：建設費の一部を寄付金で賄うことにした。","opts":["うるおう","つぐなう","まどう","まかなう"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"賄う（まかなう）＝必要な費用などを用意する。","weak":false,"date":"新作","kind":""},{"id":"N1-003","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"医師はすぐに適切な治療を«施した»。","topic":"漢字読み：医師はすぐに適切な治療を施した。","opts":["もよおした","ともなした","うながした","ほどこした"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"施す（ほどこす）＝行う、与える。","weak":false,"date":"新作","kind":""},{"id":"N1-004","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"顧客情報の«漏洩»が問題になった。","topic":"漢字読み：顧客情報の漏洩が問題になった。","opts":["ろうえい","ろうせつ","ろえい","りょうえい"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"漏洩（ろうえい）＝秘密などがもれること。","weak":false,"date":"新作","kind":""},{"id":"N1-005","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"この分野の技術は目覚ましい進歩を«遂げた»。","topic":"漢字読み：この分野の技術は目覚ましい進歩を遂げた。","opts":["さげた","あげた","つげた","とげた"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"遂げる（とげる）＝最後までやり終える。","weak":false,"date":"新作","kind":""},{"id":"N1-006","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"社会の«秩序»を守る。","topic":"漢字読み：社会の秩序を守る。","opts":["てつじょ","ちつしょ","しつじょ","ちつじょ"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"秩序（ちつじょ）＝物事の正しい順序やきまり。","weak":false,"date":"新作","kind":""},{"id":"N1-007","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"彼は長年、教育に«携わって»きた。","topic":"漢字読み：彼は長年、教育に携わってきた。","opts":["たずさわって","かかわって","そなわって","たまわって"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"携わる（たずさわる）＝ある仕事に関係する。","weak":false,"date":"新作","kind":""},{"id":"N1-008","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"まず現状を正確に«把握»する必要がある。","topic":"漢字読み：まず現状を正確に把握する必要がある。","opts":["はあく","ぱあく","はやく","はおく"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"把握（はあく）＝しっかり理解すること。","weak":false,"date":"新作","kind":""},{"id":"N1-009","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"政府は緊急の«措置»をとった。","topic":"漢字読み：政府は緊急の措置をとった。","opts":["そうち","そち","しょち","さくち"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"措置（そち）＝問題に対して必要な手続きをとること。","weak":false,"date":"新作","kind":""},{"id":"N1-010","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"不正の事実を知り、市民は強く«憤った»。","topic":"漢字読み：不正の事実を知り、市民は強く憤った。","opts":["おこたった","いつわった","いたわった","いきどおった"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"憤る（いきどおる）＝ひどく腹を立てる。","weak":false,"date":"新作","kind":""},{"id":"N1-011","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"規制の«緩和»が進められている。","topic":"漢字読み：規制の緩和が進められている。","opts":["かんわ","だんわ","えんわ","かんな"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"緩和（かんわ）＝厳しさをゆるめること。","weak":false,"date":"新作","kind":""},{"id":"N1-012","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"彼は取材を«拒んだ»。","topic":"漢字読み：彼は取材を拒んだ。","opts":["こばんだ","いどんだ","はばんだ","ひそんだ"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"拒む（こばむ）＝断る。阻む（はばむ）はじゃまをすること。","weak":false,"date":"新作","kind":""},{"id":"N1-013","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"無理をすると健康を«損なう»おそれがある。","topic":"漢字読み：無理をすると健康を損なうおそれがある。","opts":["そんなう","うしなう","そこなう","ともなう"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"損なう（そこなう）＝悪くする、傷つける。","weak":false,"date":"新作","kind":""},{"id":"N1-014","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"駅から離れた«閑静»な住宅街に住んでいる。","topic":"漢字読み：駅から離れた閑静な住宅街に住んでいる。","opts":["かんせい","かんじょう","げんせい","けんせい"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"閑静（かんせい）＝静かで落ち着いていること。","weak":false,"date":"新作","kind":""},{"id":"N1-015","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"彼女はいつも«朗らか»で、周りを明るくする。","topic":"漢字読み：彼女はいつも朗らかで、周りを明るくする。","opts":["あきらか","やすらか","ほがらか","なめらか"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"朗らか（ほがらか）＝明るく元気な様子。","weak":false,"date":"新作","kind":""},{"id":"N1-016","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"万全の準備をして決勝戦に«臨んだ»。","topic":"漢字読み：万全の準備をして決勝戦に臨んだ。","opts":["のぞんだ","いどんだ","かこんだ","りんだ"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"臨む（のぞむ）＝ある場面に向かう。","weak":false,"date":"新作","kind":""},{"id":"N1-017","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"次の条件に«該当»する方は、窓口までお越しください。","topic":"漢字読み：次の条件に該当する方は、窓口までお越しください。","opts":["かいとう","けいとう","がいどう","がいとう"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"該当（がいとう）＝条件などにあてはまること。","weak":false,"date":"新作","kind":""},{"id":"N1-018","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"彼は友人に«唆されて»、悪いことに手を出した。","topic":"漢字読み：彼は友人に唆されて、悪いことに手を出した。","opts":["はぐらかされて","ほのめかされて","そそのかされて","おびやかされて"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"唆す（そそのかす）＝悪いことをするようにすすめる。","weak":false,"date":"新作","kind":""},{"id":"N1-019","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"会場で資料を無料で«頒布»する。","topic":"漢字読み：会場で資料を無料で頒布する。","opts":["ぶんぷ","はんぶ","ふんぷ","はんぷ"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"頒布（はんぷ）＝多くの人に配ること。","weak":false,"date":"新作","kind":""},{"id":"N1-020","lv":"N1","field":"漢字読み","instr":"＿＿の言葉の読み方として最もよいものを選びなさい。","stem":"景気の悪化が«懸念»されている。","topic":"漢字読み：景気の悪化が懸念されている。","opts":["けんめい","けんねん","かねん","けねん"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"懸念（けねん）＝気にかかって心配すること。","weak":false,"date":"新作","kind":""},{"id":"N1-021","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"彼は自分の権利を強く«しゅちょう»した。","topic":"表記：彼は自分の権利を強くしゅちょうした。","opts":["主長","主張","主帳","首張"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"主張（しゅちょう）。","weak":false,"date":"新作","kind":""},{"id":"N1-022","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"新しい工場の建設には«ばくだい»な費用がかかる。","topic":"表記：新しい工場の建設にはばくだいな費用がかかる。","opts":["莫大","幕大","膜大","漠大"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"莫大（ばくだい）＝非常に多いこと。","weak":false,"date":"新作","kind":""},{"id":"N1-023","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"みんなで力を合わせて困難を«のりこえた»。","topic":"表記：みんなで力を合わせて困難をのりこえた。","opts":["乗り起えた","乗り肥えた","載り越えた","乗り越えた"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"乗り越える（のりこえる）。","weak":false,"date":"新作","kind":""},{"id":"N1-024","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"新しい薬は«けんちょ»な効果を示した。","topic":"表記：新しい薬はけんちょな効果を示した。","opts":["謙著","顕箸","堅著","顕著"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"顕著（けんちょ）＝はっきりと目立つこと。","weak":false,"date":"新作","kind":""},{"id":"N1-025","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"彼は運よく責任を«まぬがれた»。","topic":"表記：彼は運よく責任をまぬがれた。","opts":["逃れた","晩れた","免れた","勉れた"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"免れる（まぬがれる／まぬかれる）。逃れるは「のがれる」と読む。","weak":false,"date":"新作","kind":""},{"id":"N1-026","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"社会の«きはん»を守って行動する。","topic":"表記：社会のきはんを守って行動する。","opts":["規販","基範","規範","既範"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"規範（きはん）＝行動の手本となるきまり。","weak":false,"date":"新作","kind":""},{"id":"N1-027","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"長年の疲労が«ちくせき»している。","topic":"表記：長年の疲労がちくせきしている。","opts":["築積","蓄積","畜積","蓄績"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"蓄積（ちくせき）＝たくわえること、たまること。","weak":false,"date":"新作","kind":""},{"id":"N1-028","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"親の期待に«そむいて»、別の道を選んだ。","topic":"表記：親の期待にそむいて、別の道を選んだ。","opts":["背いて","偕いて","肯いて","皆いて"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"背く（そむく）＝従わない。","weak":false,"date":"新作","kind":""},{"id":"N1-029","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"あの店は«ゆうずう»が利かない。","topic":"表記：あの店はゆうずうが利かない。","opts":["有通","雄通","融通","融痛"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"融通（ゆうずう）が利く＝その場に合わせてうまく対応できる。","weak":false,"date":"新作","kind":""},{"id":"N1-030","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"双方が«だきょう»して、ようやく合意した。","topic":"表記：双方がだきょうして、ようやく合意した。","opts":["妥協","妥脇","打協","惰協"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"妥協（だきょう）＝ゆずり合ってまとめること。","weak":false,"date":"新作","kind":""},{"id":"N1-031","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"その件については«しんちょう»に検討します。","topic":"表記：その件についてはしんちょうに検討します。","opts":["慎長","慎重","深重","真重"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"慎重（しんちょう）＝注意深いこと。","weak":false,"date":"新作","kind":""},{"id":"N1-032","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"国の予算が年々«ぼうちょう»している。","topic":"表記：国の予算が年々ぼうちょうしている。","opts":["傍張","膨帳","膨張","暴張"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"膨張（ぼうちょう）＝ふくらんで大きくなること。","weak":false,"date":"新作","kind":""},{"id":"N1-033","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"記者会見で事件の«けいい»を説明した。","topic":"表記：記者会見で事件のけいいを説明した。","opts":["敬意","経意","系緯","経緯"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"経緯（けいい）＝物事のいきさつ。敬意は尊敬の気持ち。","weak":false,"date":"新作","kind":""},{"id":"N1-034","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"子育て支援の制度を«かくじゅう»する。","topic":"表記：子育て支援の制度をかくじゅうする。","opts":["拡充","拡重","確充","格充"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"拡充（かくじゅう）＝広げて充実させること。","weak":false,"date":"新作","kind":""},{"id":"N1-035","lv":"N1","field":"表記","instr":"＿＿の言葉を漢字で書くとき、最もよいものを選びなさい。","stem":"彼の実力はプロに«ひってき»する。","topic":"表記：彼の実力はプロにひってきする。","opts":["必敵","筆敵","匹適","匹敵"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"匹敵（ひってき）＝同じくらいの力があること。","weak":false,"date":"新作","kind":""},{"id":"N1-036","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"長年の努力が（　）、ついに新薬が完成した。","topic":"文脈規定：長年の努力が（　）、ついに新薬が完成した。","opts":["富み","満ち","及び","実り"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"努力が実る＝よい結果が出る。","weak":false,"date":"新作","kind":""},{"id":"N1-037","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"不正が発覚し、社長は辞任に（　）。","topic":"文脈規定：不正が発覚し、社長は辞任に（　）。","opts":["持ち込まれた","割り込まれた","追い込まれた","差し掛かった"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"辞任に追い込まれる＝やめざるをえない状況になる。","weak":false,"date":"新作","kind":""},{"id":"N1-038","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"彼の一言が、会議の（　）を大きく変えた。","topic":"文脈規定：彼の一言が、会議の（　）を大きく変えた。","opts":["跡","筋","流れ","型"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"会議の流れ＝話し合いの進み方。","weak":false,"date":"新作","kind":""},{"id":"N1-039","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"突然の質問に（　）、何も答えられなかった。","topic":"文脈規定：突然の質問に（　）、何も答えられなかった。","opts":["差し支え","見失い","打ち明け","戸惑い"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"戸惑う（とまどう）＝どうしたらよいか分からず迷う。","weak":false,"date":"新作","kind":""},{"id":"N1-040","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"彼女は（　）な人で、約束を必ず守る。","topic":"文脈規定：彼女は（　）な人で、約束を必ず守る。","opts":["怠慢","律儀","軽率","横柄"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"律儀（りちぎ）＝義理がたく、まじめなこと。","weak":false,"date":"新作","kind":""},{"id":"N1-041","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"計画は資金不足で（　）に乗り上げた。","topic":"文脈規定：計画は資金不足で（　）に乗り上げた。","opts":["浅瀬","岩礁","砂浜","暗礁"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"暗礁（あんしょう）に乗り上げる＝困難にぶつかって進まなくなる。","weak":false,"date":"新作","kind":""},{"id":"N1-042","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"両社の交渉は（　）を極めた。","topic":"文脈規定：両社の交渉は（　）を極めた。","opts":["難点","難題","難関","難航"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"難航（なんこう）を極める＝物事がなかなか進まない。","weak":false,"date":"新作","kind":""},{"id":"N1-043","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"新人ながら、彼の演技は（　）だった。","topic":"文脈規定：新人ながら、彼の演技は（　）だった。","opts":["粗末","散漫","無残","見事"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"見事＝すばらしい。","weak":false,"date":"新作","kind":""},{"id":"N1-044","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"両国の関係は（　）状態が続いている。","topic":"文脈規定：両国の関係は（　）状態が続いている。","opts":["膠着","執着","癒着","定着"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"膠着（こうちゃく）＝ある状態のまま動かないこと。","weak":false,"date":"新作","kind":""},{"id":"N1-045","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"彼は自分の非を認めず、（　）言い訳ばかりしている。","topic":"文脈規定：彼は自分の非を認めず、（　）言い訳ばかりしている。","opts":["慎ましい","心強い","見苦しい","頼もしい"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"見苦しい＝見ていて不愉快だ、みっともない。","weak":false,"date":"新作","kind":""},{"id":"N1-046","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"機密情報が外部に（　）した。","topic":"文脈規定：機密情報が外部に（　）した。","opts":["排出","放出","輸出","流出"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"流出＝情報や人材などが外に出ること。","weak":false,"date":"新作","kind":""},{"id":"N1-047","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"両者の意見には大きな（　）がある。","topic":"文脈規定：両者の意見には大きな（　）がある。","opts":["区切り","偏り","隔たり","仕切り"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"隔たり（へだたり）＝違い、距離。","weak":false,"date":"新作","kind":""},{"id":"N1-048","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"景気回復の（　）が見えてきた。","topic":"文脈規定：景気回復の（　）が見えてきた。","opts":["名残","兆し","余韻","面影"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"兆し（きざし）＝物事が起こりそうな前ぶれ。","weak":false,"date":"新作","kind":""},{"id":"N1-049","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"締め切りが迫っているので、（　）作業を進めなければならない。","topic":"文脈規定：締め切りが迫っているので、（　）作業を進めなければな…","opts":["急ピッチで","小刻みに","気長に","手探りで"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"急ピッチで＝とても速いペースで。","weak":false,"date":"新作","kind":""},{"id":"N1-050","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"部長は（　）口調で部下を叱った。","topic":"文脈規定：部長は（　）口調で部下を叱った。","opts":["険しい","鈍い","淡い","緩い"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"険しい（けわしい）口調＝きびしく、とげとげしい話し方。","weak":false,"date":"新作","kind":""},{"id":"N1-051","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"新しい制度の導入には、まだ（　）点が多い。","topic":"文脈規定：新しい制度の導入には、まだ（　）点が多い。","opts":["不透明な","不朽の","不屈の","不意の"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"不透明＝先の見通しがはっきりしないこと。","weak":false,"date":"新作","kind":""},{"id":"N1-052","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"この問題については、内容を慎重に（　）する必要がある。","topic":"文脈規定：この問題については、内容を慎重に（　）する必要がある…","opts":["吟味","賞味","興味","加味"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"吟味（ぎんみ）＝よく調べて確かめること。","weak":false,"date":"新作","kind":""},{"id":"N1-053","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"彼の提案は（　）的で、すぐには実現できそうにない。","topic":"文脈規定：彼の提案は（　）的で、すぐには実現できそうにない。","opts":["非現実","実用","具体","合理"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"非現実的＝現実には実現しにくい。","weak":false,"date":"新作","kind":""},{"id":"N1-054","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"小さなミスが（　）、大事故につながった。","topic":"文脈規定：小さなミスが（　）、大事故につながった。","opts":["偏り","衰え","隔たり","重なり"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"ミスが重なる＝いくつも続けて起こる。","weak":false,"date":"新作","kind":""},{"id":"N1-055","lv":"N1","field":"文脈規定","instr":"（　）に入れるのに最もよいものを選びなさい。","stem":"昔の町の（　）を残しながら、再開発を進める。","topic":"文脈規定：昔の町の（　）を残しながら、再開発を進める。","opts":["面影","気配","余地","兆し"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"面影（おもかげ）＝昔の様子を思い出させるもの。","weak":false,"date":"新作","kind":""},{"id":"N1-056","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"店員の«ぞんざいな»対応に腹が立った。","topic":"言い換え類義：店員のぞんざいな対応に腹が立った。","opts":["謙虚な","いいかげんな","丁寧な","慎重な"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"ぞんざい＝いいかげんで、乱暴な様子。","weak":false,"date":"新作","kind":""},{"id":"N1-057","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"その計画は«白紙に戻った»。","topic":"言い換え類義：その計画は白紙に戻った。","opts":["成功した","なかったことになった","発表された","延期された"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"白紙に戻す＝何もなかった最初の状態に戻す。","weak":false,"date":"新作","kind":""},{"id":"N1-058","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"彼女は«しきりに»時計を見ていた。","topic":"言い換え類義：彼女はしきりに時計を見ていた。","opts":["何度も","ちらっと","まったく","じっと"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"しきりに＝何度も繰り返して。","weak":false,"date":"新作","kind":""},{"id":"N1-059","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"欠席する場合は、«あらかじめ»連絡してください。","topic":"言い換え類義：欠席する場合は、あらかじめ連絡してください。","opts":["すぐに","後で","前もって","必ず"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"あらかじめ＝前もって。","weak":false,"date":"新作","kind":""},{"id":"N1-060","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"患者の容体は悪く、事態は«一刻を争う»。","topic":"言い換え類義：患者の容体は悪く、事態は一刻を争う。","opts":["長引いている","誰にも分からない","非常に急ぐ必要がある","落ち着いている"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"一刻を争う＝少しの時間も無駄にできない。","weak":false,"date":"新作","kind":""},{"id":"N1-061","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"彼の話は«つじつまが合わない»。","topic":"言い換え類義：彼の話はつじつまが合わない。","opts":["筋が通らない","面白くない","長すぎる","声が小さい"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"つじつまが合わない＝話の前後が合わない。","weak":false,"date":"新作","kind":""},{"id":"N1-062","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"会場には«おびただしい»数の人が集まった。","topic":"言い換え類義：会場にはおびただしい数の人が集まった。","opts":["非常に多い","予想どおりの","わずかな","ちょうどよい"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"おびただしい＝数や量がとても多い。","weak":false,"date":"新作","kind":""},{"id":"N1-063","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"両チームの実力は«拮抗している»。","topic":"言い換え類義：両チームの実力は拮抗している。","opts":["大きく違う","下がっている","ほぼ同じだ","まだ分からない"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"拮抗（きっこう）＝力が同じくらいで、張り合っていること。","weak":false,"date":"新作","kind":""},{"id":"N1-064","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"祖父は90歳を過ぎたが、«いたって»元気だ。","topic":"言い換え類義：祖父は90歳を過ぎたが、いたって元気だ。","opts":["非常に","相変わらず","まあまあ","少し"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"いたって＝非常に、きわめて。","weak":false,"date":"新作","kind":""},{"id":"N1-065","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"試験の結果に«落胆した»。","topic":"言い換え類義：試験の結果に落胆した。","opts":["満足した","がっかりした","驚いた","安心した"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"落胆（らくたん）＝がっかりすること。","weak":false,"date":"新作","kind":""},{"id":"N1-066","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"計画は«ことごとく»失敗した。","topic":"言い換え類義：計画はことごとく失敗した。","opts":["ほとんど","一部","何回か","すべて"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"ことごとく＝残らず、すべて。","weak":false,"date":"新作","kind":""},{"id":"N1-067","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"新しく入った山田さんは«手際がいい»。","topic":"言い換え類義：新しく入った山田さんは手際がいい。","opts":["運がいい","物事の処理がうまい","力が強い","人に優しい"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"手際（てぎわ）がいい＝物事をうまく、速く処理する。","weak":false,"date":"新作","kind":""},{"id":"N1-068","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"部長は私の提案を«一蹴した»。","topic":"言い換え類義：部長は私の提案を一蹴した。","opts":["保留にした","すぐにはねつけた","受け入れた","よく考えた"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"一蹴（いっしゅう）する＝相手にせず、はねつける。","weak":false,"date":"新作","kind":""},{"id":"N1-069","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"老人は«おもむろに»立ち上がった。","topic":"言い換え類義：老人はおもむろに立ち上がった。","opts":["仕方なく","ゆっくりと","急に","驚いて"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"おもむろに＝ゆっくりと、落ち着いて。","weak":false,"date":"新作","kind":""},{"id":"N1-070","lv":"N1","field":"言い換え類義","instr":"＿＿の言葉に意味が最も近いものを選びなさい。","stem":"評論家は新作映画に«辛辣な»意見を述べた。","topic":"言い換え類義：評論家は新作映画に辛辣な意見を述べた。","opts":["優しい","曖昧な","面白い","厳しい"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"辛辣（しんらつ）＝言い方や批評がとても厳しい。","weak":false,"date":"新作","kind":""},{"id":"N1-071","lv":"N1","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"目途（めど）","topic":"用法：目途（めど）","opts":["工事は年内に完成する目途が立った。","目途な努力が実を結んだ。","彼は目途に向かって毎日走っている。","彼は目途を見開いて驚いた。"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"目途が立つ＝見通しがつく。","weak":false,"date":"新作","kind":""},{"id":"N1-072","lv":"N1","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"懸念","topic":"用法：懸念","opts":["円安による物価の上昇が懸念されている。","試験に合格できるよう、懸念に勉強した。","懸念の末、旅行に行くことにした。","彼女は懸念な顔で笑った。"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"懸念（けねん）＝気にかかって心配すること。懸命（けんめい）と混同しない。","weak":false,"date":"新作","kind":""},{"id":"N1-073","lv":"N1","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"ひたむき","topic":"用法：ひたむき","opts":["彼のひたむきな姿勢に心を打たれた。","ひたむきな値段で買い物ができた。","この道をひたむきに行くと駅に出る。","雨がひたむきに降り続いた。"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"ひたむき＝一つのことに一生懸命に取り組む様子。","weak":false,"date":"新作","kind":""},{"id":"N1-074","lv":"N1","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"打ち切る","topic":"用法：打ち切る","opts":["大きな音に打ち切られて目が覚めた。","疲れて、ベッドに体を打ち切った。","視聴率が低いため、その番組は3か月で打ち切られた。","彼は悩みを友人に打ち切った。"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"打ち切る＝途中でやめる、終わりにする。打ち明けるとの違いに注意。","weak":false,"date":"新作","kind":""},{"id":"N1-075","lv":"N1","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"拍車をかける","topic":"用法：拍車をかける","opts":["試合に負けて、拍車をかけて泣いた。","彼は友人に拍車をかけて車を借りた。","拍車をかけて家の掃除をした。","円安が物価の上昇に拍車をかけた。"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"拍車をかける＝物事の進み方をいっそう速くする。","weak":false,"date":"新作","kind":""},{"id":"N1-076","lv":"N1","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"目覚ましい","topic":"用法：目覚ましい","opts":["疲れていたので、目覚ましく眠った。","目覚ましい音で朝早く起きた。","目覚ましい天気で、空が暗い。","彼女の日本語は目覚ましい進歩を見せた。"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"目覚ましい＝目を見張るほどすばらしい。","weak":false,"date":"新作","kind":""},{"id":"N1-077","lv":"N1","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"いたわる","topic":"用法：いたわる","opts":["年を取った両親の体をいたわる。","天気をいたわって出発を決めた。","部屋をいたわって掃除した。","彼は約束をいたわって遅れてきた。"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"いたわる＝弱い人などを大切にする。","weak":false,"date":"新作","kind":""},{"id":"N1-078","lv":"N1","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"抜本的","topic":"用法：抜本的","opts":["彼は抜本的に背が高い。","少子化問題には抜本的な対策が必要だ。","歯を抜本的に磨いた。","抜本的な天気が続いている。"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"抜本的＝問題のもとから根本的に直す様子。","weak":false,"date":"新作","kind":""},{"id":"N1-079","lv":"N1","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"おろそか","topic":"用法：おろそか","opts":["仕事が忙しくても、健康をおろそかにしてはいけない。","料理がおろそかで、とてもおいしかった。","おろそかな雨が降り続いている。","彼はおろそかな声で歌った。"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"おろそか＝いいかげんにすること。「〜をおろそかにする」の形で使う。","weak":false,"date":"新作","kind":""},{"id":"N1-080","lv":"N1","field":"用法","instr":"次の言葉の使い方として最もよいものを選びなさい。","stem":"踏まえる","topic":"用法：踏まえる","opts":["前回の反省を踏まえて、計画を立て直した。","彼は友人を踏まえて会社を辞めた。","階段を踏まえて2階に上がった。","雨を踏まえて傘を持ってきた。"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"踏まえる＝ある事実や考えを判断のもとにする。","weak":false,"date":"新作","kind":""},{"id":"N1-081","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"彼の才能は、プロ（　）驚くほどだ。","topic":"文法：彼の才能は、プロ（　）驚くほどだ。","opts":["にあって","ともなると","でさえ","とあれば"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜でさえ＝〜も（極端な例を出して）。","weak":false,"date":"新作","kind":""},{"id":"N1-082","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"社長（　）、そんな勝手な行動は許されない。","topic":"文法：社長（　）、そんな勝手な行動は許されない。","opts":["をもって","にひきかえ","といえども","ならでは"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜といえども＝〜であっても。","weak":false,"date":"新作","kind":""},{"id":"N1-083","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"本日（　）、受付を終了いたします。","topic":"文法：本日（　）、受付を終了いたします。","opts":["をもって","をよそに","にあって","をもとに"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"〜をもって＝〜で（区切りを示す改まった言い方）。","weak":false,"date":"新作","kind":""},{"id":"N1-084","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"この料理は、地元の人（　）の味だ。","topic":"文法：この料理は、地元の人（　）の味だ。","opts":["ならでは","ずくめ","まみれ","ばかり"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"〜ならでは＝〜だけが持つ特別な。","weak":false,"date":"新作","kind":""},{"id":"N1-085","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"家族の心配（　）、彼は一人で危険な山に登った。","topic":"文法：家族の心配（　）、彼は一人で危険な山に登った。","opts":["にひきかえ","ならでは","をよそに","をもって"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜をよそに＝〜を気にしないで。","weak":false,"date":"新作","kind":""},{"id":"N1-086","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"兄が優秀なの（　）、弟は勉強が苦手だ。","topic":"文法：兄が優秀なの（　）、弟は勉強が苦手だ。","opts":["にかかわらず","をよそに","にひきかえ","ならでは"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜にひきかえ＝〜とは反対に。","weak":false,"date":"新作","kind":""},{"id":"N1-087","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"理由の（　）、遅刻は認めない。","topic":"文法：理由の（　）、遅刻は認めない。","opts":["ともなく","いかんにかかわらず","ゆえに","いかんでは"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"〜のいかんにかかわらず＝〜がどうであっても。","weak":false,"date":"新作","kind":""},{"id":"N1-088","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"交渉の結果（　）、計画が中止になる可能性もある。","topic":"文法：交渉の結果（　）、計画が中止になる可能性もある。","opts":["をよそに","いかんでは","いかんにかかわらず","をもって"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"〜いかんでは＝〜によっては。","weak":false,"date":"新作","kind":""},{"id":"N1-089","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"一度失敗した（　）、あきらめるのはまだ早い。","topic":"文法：一度失敗した（　）、あきらめるのはまだ早い。","opts":["からといって","ともなると","ばかりに","とあれば"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"〜からといって＝〜という理由だけで（…とは言えない）。","weak":false,"date":"新作","kind":""},{"id":"N1-090","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"子どものため（　）、どんな苦労もいとわない。","topic":"文法：子どものため（　）、どんな苦労もいとわない。","opts":["ともなく","とあれば","ずくめ","なりに"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"〜とあれば＝〜のためなら。","weak":false,"date":"新作","kind":""},{"id":"N1-091","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"彼は朝から晩まで働き（　）だ。","topic":"文法：彼は朝から晩まで働き（　）だ。","opts":["まみれ","づめ","ぐるみ","ずくめ"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"〜づめ＝ずっと〜し続ける。","weak":false,"date":"新作","kind":""},{"id":"N1-092","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"今日はいいこと（　）の一日だった。","topic":"文法：今日はいいこと（　）の一日だった。","opts":["まみれ","づめ","ぐるみ","ずくめ"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"〜ずくめ＝〜ばかり。","weak":false,"date":"新作","kind":""},{"id":"N1-093","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"彼は汗（　）になって働いた。","topic":"文法：彼は汗（　）になって働いた。","opts":["づめ","ずくめ","ぐるみ","まみれ"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"〜まみれ＝汗・泥など、よくないものが全体についている。","weak":false,"date":"新作","kind":""},{"id":"N1-094","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"町（　）で環境保護に取り組んでいる。","topic":"文法：町（　）で環境保護に取り組んでいる。","opts":["ずくめ","まみれ","づめ","ぐるみ"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"〜ぐるみ＝〜全体で。","weak":false,"date":"新作","kind":""},{"id":"N1-095","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"大臣（　）人が、そんな発言をするとは。","topic":"文法：大臣（　）人が、そんな発言をするとは。","opts":["ともなしに","ならではの","ともあろう","ばかりの"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜ともあろう…が＝立派な立場の…が（そんなことをするとは）。","weak":false,"date":"新作","kind":""},{"id":"N1-096","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"彼女は今にも泣き出さん（　）顔をしていた。","topic":"文法：彼女は今にも泣き出さん（　）顔をしていた。","opts":["ばかりの","ものの","までの","かぎりの"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"〜んばかり＝今にも〜しそうな。","weak":false,"date":"新作","kind":""},{"id":"N1-097","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"言う（　）、約束は守るべきだ。","topic":"文法：言う（　）、約束は守るべきだ。","opts":["がてら","かたがた","までもなく","ものなら"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜までもなく＝〜する必要もなく。","weak":false,"date":"新作","kind":""},{"id":"N1-098","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"できる（　）、もう一度学生時代に戻りたい。","topic":"文法：できる（　）、もう一度学生時代に戻りたい。","opts":["ながらも","ものなら","そばから","までもなく"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"〜ものなら＝もし〜できるなら（難しいことを願う）。","weak":false,"date":"新作","kind":""},{"id":"N1-099","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"散歩（　）、コンビニに寄った。","topic":"文法：散歩（　）、コンビニに寄った。","opts":["そばから","ものなら","がてら","までもなく"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜がてら＝〜のついでに。","weak":false,"date":"新作","kind":""},{"id":"N1-100","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"単語を覚えた（　）忘れてしまう。","topic":"文法：単語を覚えた（　）忘れてしまう。","opts":["かたわら","そばから","がてら","ものなら"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"〜そばから＝〜してもすぐに。","weak":false,"date":"新作","kind":""},{"id":"N1-101","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"彼は会社に勤める（　）、小説を書いている。","topic":"文法：彼は会社に勤める（　）、小説を書いている。","opts":["がてら","ものなら","かたわら","そばから"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜かたわら＝本業をしながら、その一方で。","weak":false,"date":"新作","kind":""},{"id":"N1-102","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"彼の勇気ある行動は称賛に（　）。","topic":"文法：彼の勇気ある行動は称賛に（　）。","opts":["堪えない","限る","及ばない","値する"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"〜に値する＝〜する価値がある。","weak":false,"date":"新作","kind":""},{"id":"N1-103","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"あまりにひどい内容で、聞くに（　）。","topic":"文法：あまりにひどい内容で、聞くに（　）。","opts":["堪えない","値する","足る","及ぶ"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"〜に堪えない＝ひどくて〜することができない。","weak":false,"date":"新作","kind":""},{"id":"N1-104","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"彼の説明は、信頼する（　）ものだった。","topic":"文法：彼の説明は、信頼する（　）ものだった。","opts":["をおいて","に足る","に堪えない","にかたくない"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"〜に足る＝〜するだけの価値がある。","weak":false,"date":"新作","kind":""},{"id":"N1-105","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"家族を失った彼の悲しみは、想像に（　）。","topic":"文法：家族を失った彼の悲しみは、想像に（　）。","opts":["及ばない","足る","かたくない","堪えない"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"想像にかたくない＝簡単に想像できる。","weak":false,"date":"新作","kind":""},{"id":"N1-106","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"この仕事を任せられるのは、彼（　）ほかにいない。","topic":"文法：この仕事を任せられるのは、彼（　）ほかにいない。","opts":["をよそに","をもって","をおいて","を皮切りに"],"tf":[false,false,true,false],"exp":["","","",""],"ans":[3],"point":"〜をおいてほかにない＝〜以外にない。","weak":false,"date":"新作","kind":""},{"id":"N1-107","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"東京公演（　）、全国10都市でコンサートを行う。","topic":"文法：東京公演（　）、全国10都市でコンサートを行う。","opts":["をもって","をよそに","をおいて","を皮切りに"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"〜を皮切りに＝〜を始まりとして。","weak":false,"date":"新作","kind":""},{"id":"N1-108","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"彼は謝る（　）、反論し始めた。","topic":"文法：彼は謝る（　）、反論し始めた。","opts":["とはいえ","どころか","ばかりか","のみならず"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"〜どころか＝〜は当然しないで、反対に。","weak":false,"date":"新作","kind":""},{"id":"N1-109","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"暦の上では春（　）、まだ寒い日が続く。","topic":"文法：暦の上では春（　）、まだ寒い日が続く。","opts":["とあって","とはいえ","どころか","ともなると"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"〜とはいえ＝〜だけれども。","weak":false,"date":"新作","kind":""},{"id":"N1-110","lv":"N1","field":"文法","instr":"次の文の（　）に入れるのに最もよいものを選びなさい。","stem":"人気歌手が来る（　）、会場は大勢の人で埋まった。","topic":"文法：人気歌手が来る（　）、会場は大勢の人で埋まった。","opts":["とあって","とはいえ","といえども","ともなく"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"〜とあって＝〜という特別な状況なので。","weak":false,"date":"新作","kind":""},{"id":"N1-111","lv":"N1","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"情報があふれる現代では、知識を持っていること自体の価値は下がりつつある。調べればすぐに分かるからだ。むしろ求められているのは、膨大な情報の中から必要なものを選び、それをどう使うかを判断する力である。\n\n筆者によると、現代で求められている力は何か。","topic":"読解：情報があふれる現代では、知識を持っていること自体の価…","opts":["必要な情報を選び、使い方を判断する力","自分で情報を発信する力","たくさんの知識を覚えておく力","速く情報を調べる力"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"「むしろ求められているのは〜力である」が答え。","weak":false,"date":"新作","kind":""},{"id":"N1-112","lv":"N1","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"「便利さ」は、しばしば何かを失うことと引き換えに得られる。たとえば、移動が速くなるにつれて、途中の景色を楽しむ時間は減った。便利さを否定するつもりはないが、失ったものにも時には目を向けるべきではないだろうか。\n\n筆者の主張に最も近いものはどれか。","topic":"読解：「便利さ」は、しばしば何かを失うことと引き換えに得ら…","opts":["便利さの陰で失ったものにも目を向けるべきだ。","移動はもっと速くなるべきだ。","景色を楽しむ時間は増えている。","便利さは否定すべきだ。"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"「〜べきではないだろうか」は筆者の主張を表す。便利さは否定していない。","weak":false,"date":"新作","kind":""},{"id":"N1-113","lv":"N1","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"子どもに「頑張れ」と言うことは簡単だ。しかし、すでに精一杯頑張っている子どもにとって、その言葉は重荷になることもある。大人に必要なのは、結果だけを見て励ますことではなく、それまでの過程を認めることではないか。\n\n筆者は、大人に何が必要だと考えているか。","topic":"読解：子どもに「頑張れ」と言うことは簡単だ。しかし、すでに…","opts":["子どもの努力の過程を認めること","もっと「頑張れ」と言うこと","結果だけを見て評価すること","重荷にならないよう何も言わないこと"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"「〜ではなく、〜ことではないか」の後半が筆者の考え。","weak":false,"date":"新作","kind":""},{"id":"N1-114","lv":"N1","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"多数決は民主的な決め方だとされる。しかし、それは少数派の意見が十分に聞かれたうえで行われてこそ意味を持つ。議論を省いて数だけで決めるなら、それは単に多数派の意思を押し付けることにほかならない。\n\n筆者の考えに合うものはどれか。","topic":"読解：多数決は民主的な決め方だとされる。しかし、それは少数…","opts":["議論は時間の無駄なので、省くべきだ。","多数決は民主的ではないので、使うべきではない。","少数派の意見で物事を決めるべきだ。","多数決は、少数派の意見を十分に聞いてから行うべきだ。"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"「〜てこそ意味を持つ」＝〜したときにだけ意味がある。","weak":false,"date":"新作","kind":""},{"id":"N1-115","lv":"N1","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"翻訳は、ある言語の言葉を別の言語の言葉に置き換えるだけの作業ではない。言葉の背景にある文化や習慣までも理解しなければ、本当の意味は伝わらない。優れた翻訳者が「もう一人の作者」と呼ばれるのはそのためである。\n\n「そのため」とは何を指すか。","topic":"読解：翻訳は、ある言語の言葉を別の言語の言葉に置き換えるだ…","opts":["翻訳者がいくつもの言語を話せること","翻訳者が作品を自由に書き直すこと","翻訳は、言葉を置き換えるだけの作業であること","翻訳には、文化や習慣の理解まで必要であること"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"直前の文の内容を指している。","weak":false,"date":"新作","kind":""},{"id":"N1-116","lv":"N1","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"年を取ると新しいことを覚えにくくなると言われる。確かに記憶の速さは衰えるかもしれない。しかし、豊富な経験と結びつけることで、若い人以上に深く理解できることも少なくない。学ぶのに遅すぎるということはないのである。\n\n筆者の主張は何か。","topic":"読解：年を取ると新しいことを覚えにくくなると言われる。確か…","opts":["若い人のほうが、いつも深く理解できる。","年を取っても、経験を生かして深く学ぶことができる。","年を取ると、もう学ぶことはできない。","記憶の速さは年齢と関係がない。"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"「確かに〜。しかし〜」の「しかし」の後が主張。","weak":false,"date":"新作","kind":""},{"id":"N1-117","lv":"N1","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"失敗を隠す組織は、同じ失敗を繰り返す。報告すれば責められると分かっていれば、人は失敗を隠そうとするからだ。失敗を共有し、そこから学ぶ文化をつくることが、結果として組織を強くするのである。\n\n筆者によると、組織を強くするには何が必要か。","topic":"読解：失敗を隠す組織は、同じ失敗を繰り返す。報告すれば責め…","opts":["失敗しない人だけを採用すること","失敗した人を厳しく責めること","失敗を外部に知られないようにすること","失敗を共有し、そこから学ぶ文化をつくること"],"tf":[false,false,false,true],"exp":["","","",""],"ans":[4],"point":"最後の文が答え。","weak":false,"date":"新作","kind":""},{"id":"N1-118","lv":"N1","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"「普通」という言葉ほどあいまいなものはない。ある人にとって普通のことが、別の人には特別なことである場合も多い。自分の「普通」を他人に当てはめようとするとき、私たちは知らず知らずのうちに誰かを傷つけているのかもしれない。\n\n筆者が言いたいことは何か。","topic":"読解：「普通」という言葉ほどあいまいなものはない。ある人に…","opts":["自分の「普通」を他人に押し付けないよう気をつけるべきだ。","「普通」の意味は誰にとっても同じだ。","特別なことはするべきではない。","他人を傷つけることは避けられない。"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"「普通」は人によって違う、という主張。","weak":false,"date":"新作","kind":""},{"id":"N1-119","lv":"N1","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"科学技術の進歩は、人間の生活を豊かにしてきた。一方で、その使い方を誤れば、取り返しのつかない被害をもたらすこともある。技術そのものに善悪はなく、問われているのは、それを扱う人間の判断なのである。\n\n筆者の考えに合うものはどれか。","topic":"読解：科学技術の進歩は、人間の生活を豊かにしてきた。一方で…","opts":["技術をどう使うかは、人間の判断にかかっている。","技術の進歩は生活を豊かにしなかった。","技術そのものが悪いものだ。","科学技術の進歩は止めるべきだ。"],"tf":[true,false,false,false],"exp":["","","",""],"ans":[1],"point":"「問われているのは、それを扱う人間の判断」とある。","weak":false,"date":"新作","kind":""},{"id":"N1-120","lv":"N1","field":"読解","instr":"次の文章を読んで、質問に答えなさい。","stem":"【社内通知】来月より在宅勤務制度を拡充します。これまで週1日までとしていた在宅勤務を、週3日まで認めます。ただし、新入社員は入社後3か月間は対象外とします。申請は、前週の金曜日までに上司に行ってください。\n\nこの通知の内容と合うものはどれか。","topic":"読解：【社内通知】来月より在宅勤務制度を拡充します。これま…","opts":["在宅勤務は来月から週1日までに制限される。","在宅勤務の申請は、前の週の金曜日までに上司に出す。","申請は在宅勤務をする日の朝に行えばよい。","新入社員も入社直後から週3日在宅勤務ができる。"],"tf":[false,true,false,false],"exp":["","","",""],"ans":[2],"point":"「申請は、前週の金曜日までに上司に」とある。","weak":false,"date":"新作","kind":""}],"glossary":{"にもかかわらず":"〜なのに。予想と違う結果に使う。例：雨にもかかわらず、試合は行われた。（N2）","くせに":"〜なのに（相手を非難する気持ち）。例：知っているくせに教えない。（N2）","ばかりか":"〜だけでなく…も。（N2）","おそれがある":"悪いことが起こる可能性がある。ニュースなどでよく使う。（N2）","すえに":"いろいろあって、最後に。例：悩んだすえに決めた。（N2）","わけにはいかない":"（事情があって）〜できない。「〜ないわけにはいかない」は「〜しなければならない」。（N2）","どころではない":"〜する余裕がない。（N2）","を問わず":"〜に関係なく。例：年齢を問わず参加できる。（N2）","に応じて":"〜に合わせて変わる。（N2）","をめぐって":"〜について（議論・対立など）。（N2）","をこめて":"気持ちを入れて。例：心をこめて書く。（N2）","に先立ち":"〜の前に（改まった言い方）。（N2）","をもとに":"〜を材料・基礎にして。（N2）","に反して":"〜とは逆に。例：予想に反して。（N2）","に伴い":"〜といっしょに変化して。（N2）","にかけては":"〜の分野では（いちばんだ）。（N2）","とは限らない":"いつも〜というわけではない。（N2）","に違いない":"きっと〜だ（強い推量）。（N2）","にすぎない":"ただ〜だけだ。（N2）","に限る":"〜がいちばんいい。（N2）","わけがない":"絶対に〜ない。（N2）","ものの":"〜けれども。（N2）","でさえ":"〜も（極端な例を出して）。（N1）","といえども":"〜であっても。（N1）","をもって":"〜で（区切り・手段を表す改まった言い方）。（N1）","ならでは":"〜だけが持つ特別な。例：京都ならではの景色。（N1）","をよそに":"〜を気にしないで。（N1）","にひきかえ":"〜とは反対に。（N1）","いかんでは":"〜によっては。（N1）","とあれば":"〜のためなら、〜というのなら。（N1）","ずくめ":"〜ばかり。例：いいことずくめ。（N1）","まみれ":"汗・泥など、よくないものが全体についている。（N1）","ぐるみ":"〜全体で。例：町ぐるみ。（N1）","ともあろう":"立派な立場の人が（そんなことをするとは）。（N1）","までもなく":"〜する必要もなく。（N1）","がてら":"〜のついでに。（N1）","そばから":"〜してもすぐに。（N1）","かたわら":"本業をしながら、その一方で。（N1）","に値する":"〜する価値がある。（N1）","に堪えない":"ひどくて〜できない。例：見るに堪えない。（N1）","に足る":"〜するだけの価値がある。（N1）","にかたくない":"簡単に〜できる。例：想像にかたくない。（N1）","をおいて":"「〜をおいてほかにない」＝〜以外にない。（N1）","を皮切りに":"〜を始まりとして。（N1）","とはいえ":"〜だけれども。（N1）","とあって":"〜という特別な状況なので。（N1）"}}</script>
+<script>
+(async function(){
+let DATA;
+try{DATA=JSON.parse(document.getElementById('data').textContent)}catch(e){
+  try{DATA=await (await fetch('questions.json')).json()}catch(e2){document.getElementById('view').innerHTML='<div class="panel empty">問題を読み込めませんでした。通信の状態を確かめて、もう一度開いてください。</div>';return}
+}
+const Q=DATA.questions, GL=DATA.glossary;
+const QBY={}; Q.forEach(q=>QBY[q.id]=q);
+document.getElementById('qcount').textContent=Q.length;
+const FIELDS=['漢字読み','表記','文脈規定','言い換え類義','用法','文法','読解'];
+const FSHORT={'漢字読み':'漢字読み','表記':'表記','文脈規定':'文脈','言い換え類義':'言い換え','用法':'用法','文法':'文法','読解':'読解'};
+
+/* ---- 一日一問（チャット）でこれまでに解いた結果。最初の1回だけ記録に取り込む ---- */
+const HISTORY={};
+
+/* ---------- utils ---------- */
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pct=(c,n)=>n?Math.round(c/n*100):0;
+const terms=Object.keys(GL).sort((a,b)=>b.length-a.length);
+const termRe=new RegExp('('+terms.map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','g');
+function hl(s){return esc(s).replace(termRe,m=>'<button class="term" data-term="'+esc(m)+'">'+m+'</button>')}
+const fmtStem=t=>esc(t).replace(/«(.*?)»/g,'<u>$1</u>').replace(/\n/g,'<br>');
+const stemOf=q=>{const ins='<span class="note" style="display:block;margin-bottom:6px">'+esc(q.instr)+'</span>';
+  if(q.field==='用法') return ins+'<b style="font-size:1.3rem">'+esc(q.stem)+'</b>';
+  if(q.field==='読解'){const k=q.stem.lastIndexOf('\n\n');return ins+'<span style="display:block;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;font-weight:400;line-height:1.9;margin-bottom:10px">'+fmtStem(q.stem.slice(0,k))+'</span><b>'+fmtStem(q.stem.slice(k+2))+'</b>'}
+  return ins+fmtStem(q.stem)};
+function optRes(q,i,picked){
+  const ok=q.tf[i];
+  return `<div class="res ${ok?'ok':(picked?'ng':'')}"><div class="line"><span>${ok?'🟢':(picked?'🔴':'・')}</span><span>${i+1}. ${esc(q.opts[i])}</span>${ok?'<span class="you" style="color:var(--ok);font-weight:700">← 正解</span>':''}${picked&&!ok?'<span class="you">あなたが選択</span>':''}</div></div>`;
+}
+const oxStem=q=>q.topic.replace(/について$/,'')+'について';
+
+/* ---------- state ---------- */
+let S={v:1,mcq:{},ox:{},days:{},imported:false,mocks:[]};
+let OWNER=false;
+let store=null, saving=false, dirty=false;
+const LS='jlpt-drill-v1';
+
+/* ---------- ランキング（Googleスプレッドシートに保存） ----------
+   ↓ Apps Script を「ウェブアプリ」としてデプロイしたときのURLを '' の中に貼る */
+const RANK_URL='https://script.google.com/macros/s/AKfycbyOiDY8s2rXLenmLfPuwcHpbUg1aoaMwRSiKRr0U41k8MIxrNOJn8Op7H4r1KfxpAHZ/exec';
+function rkGet(k){try{return localStorage.getItem(LS+'-'+k)}catch(e){return null}}
+function rkSet(k,v){try{v==null?localStorage.removeItem(LS+'-'+k):localStorage.setItem(LS+'-'+k,v)}catch(e){}}
+function myId(){let id=rkGet('uid');if(!id){id='';const c='abcdefghijklmnopqrstuvwxyz0123456789';const a=new Uint32Array(24);(crypto.getRandomValues?crypto.getRandomValues(a):a.forEach((_,i)=>a[i]=Math.random()*1e9));a.forEach(n=>id+=c[n%36]);rkSet('uid',id)}return id}
+function weekKey(d){d=d?new Date(d+'T00:00:00'):new Date();const w=(d.getDay()+6)%7;d.setDate(d.getDate()-w);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function myScore(){const t=totals();const wk=weekKey();let wn=0,wc=0;for(const k in S.days){if(weekKey(k)===wk){wn+=S.days[k].n;wc+=S.days[k].c}}const st=streakInfo();return{correct:t.c,total:t.n,wk,wc,wn,streak:st.cur,ld:st.today?today():dayStr(new Date(Date.now()-864e5)),bc:earnedIds().length}}
+let rkTimer=null;
+function sendScore(now){
+  const nick=rkGet('nick'); if(!RANK_URL||!nick) return Promise.resolve();
+  clearTimeout(rkTimer);
+  const go=()=>fetch(RANK_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(Object.assign({action:'save',app:'jlpt',id:myId(),name:nick},myScore()))}).catch(()=>{});
+  if(now) return go();
+  rkTimer=setTimeout(go,2500); return Promise.resolve();
+}
+
+/* ---------- 連続日数 ---------- */
+const dayStr=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+function streakInfo(){
+  const set=new Set(Object.keys(S.days).filter(k=>S.days[k].n>0));
+  const d=new Date(); const doneToday=set.has(dayStr(d)); if(!doneToday) d.setDate(d.getDate()-1);
+  let cur=0; while(set.has(dayStr(d))){cur++;d.setDate(d.getDate()-1)}
+  let best=0,run=0,prev=null;
+  [...set].sort().forEach(k=>{const t=new Date(k+'T00:00:00');run=(prev&&Math.round((t-prev)/864e5)===1)?run+1:1;if(run>best)best=run;prev=t});
+  return {cur,best:Math.max(best,cur),today:doneToday};
+}
+
+/* ---------- バッジ ---------- */
+function lvAll(l){const qs=Q.filter(q=>q.lv===l);return qs.length>0&&qs.every(q=>S.mcq[q.id]&&S.mcq[q.id].c>0)}
+function fieldAll(f){const qs=Q.filter(q=>q.field===f);return qs.length>0&&qs.every(q=>S.mcq[q.id]&&S.mcq[q.id].c>0)}
+const BADGES=[
+  {id:'first',e:'🌱',n:'はじめの一歩',d:'1問解く',f:x=>x.t.n>=1},
+  {id:'c50',e:'📗',n:'50問正解',d:'累計50問正解',f:x=>x.t.c>=50},
+  {id:'c100',e:'💯',n:'100問正解',d:'累計100問正解',f:x=>x.t.c>=100},
+  {id:'c300',e:'🏅',n:'300問正解',d:'累計300問正解',f:x=>x.t.c>=300},
+  {id:'c1000',e:'👑',n:'1000問正解',d:'累計1000問正解',f:x=>x.t.c>=1000},
+  {id:'s3',e:'🔥',n:'3日連続',d:'3日続けて解く',f:x=>x.best>=3},
+  {id:'s7',e:'⚡',n:'1週間連続',d:'7日続けて解く',f:x=>x.best>=7},
+  {id:'s30',e:'🌟',n:'30日連続',d:'30日続けて解く',f:x=>x.best>=30},
+  {id:'d20',e:'🎯',n:'1日20問正解',d:'1日で20問正解',f:x=>Object.values(S.days).some(d=>d.c>=20)},
+  {id:'f1',e:'🎌',n:'N2制覇',d:'N2の問題を全問正解',f:()=>lvAll('N2')},
+  {id:'f2',e:'🚀',n:'N1デビュー',d:'N1の問題で10問正解',f:()=>Q.filter(q=>q.lv==='N1').reduce((a,q)=>a+((S.mcq[q.id]&&S.mcq[q.id].c)?1:0),0)>=10},
+  {id:'f3',e:'🗻',n:'N1制覇',d:'N1の問題を全問正解',f:()=>lvAll('N1')},
+  {id:'m1',e:'📝',n:'模試デビュー',d:'模試を1回受ける',f:x=>x.mocks.length>=1},
+  {id:'m2',e:'🎓',n:'模試合格',d:'模試で合格ライン突破',f:x=>x.mocks.some(m=>m.pass)},
+  {id:'m3',e:'🏆',n:'模試90%',d:'N2かN1の模試で正答率90%以上',f:x=>x.mocks.some(m=>m.kind!=='mini'&&m.sc&&m.sc[0]>=m.sc[1]*0.9)}
+];
+function earnedIds(){const x={t:totals(),best:streakInfo().best,mocks:S.mocks||[]};return BADGES.filter(b=>{try{return b.f(x)}catch(e){return false}}).map(b=>b.id)}
+let toastT=null;
+function toast(html){
+  let el=document.getElementById('toast'); if(!el){el=document.createElement('div');el.id='toast';el.className='toast';el.setAttribute('role','status');document.body.appendChild(el)}
+  el.innerHTML=html; el.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>{el.hidden=true},3200);
+}
+function checkBadges(){
+  const now=earnedIds(); if(!S.badges){S.badges=now;return}
+  const fresh=now.filter(id=>!S.badges.includes(id)); if(!fresh.length) return;
+  S.badges=S.badges.concat(fresh); persist();
+  const b=BADGES.find(x=>x.id===fresh[fresh.length-1]);
+  toast('<span class="e">'+b.e+'</span>バッジ獲得！「'+esc(b.n)+'」'+(fresh.length>1?'（ほか'+(fresh.length-1)+'個）':''));
+}
+function badgeGrid(){
+  const got=new Set(earnedIds());
+  return '<div class="badges">'+BADGES.map(b=>'<div class="bdg '+(got.has(b.id)?'':'off')+'"><span class="e">'+b.e+'</span><b>'+esc(b.n)+'</b><span>'+esc(b.d)+'</span></div>').join('')+'</div>';
+}
+
+/* ---------- 模試 ---------- */
+const MOCK_TYPES={
+  n2:{label:'N2 模試',lv:'N2',per:{'漢字読み':5,'表記':4,'文脈規定':5,'言い換え類義':4,'用法':3,'文法':10,'読解':5},min:60},
+  n1:{label:'N1 模試',lv:'N1',per:{'漢字読み':5,'表記':4,'文脈規定':5,'言い換え類義':4,'用法':3,'文法':10,'読解':5},min:60},
+  mini:{label:'N2 ミニ模試',lv:'N2',per:{'漢字読み':3,'表記':2,'文脈規定':3,'言い換え類義':2,'用法':1,'文法':5,'読解':2},min:30}
+};
+const PASS=0.6;
+let mock=null, mockTick=null, mockQuit=false;
+try{const t=localStorage.getItem(LS+'-mock');if(t)mock=JSON.parse(t)}catch(e){}
+function saveMock(){try{mock?localStorage.setItem(LS+'-mock',JSON.stringify(mock)):localStorage.removeItem(LS+'-mock')}catch(e){}}
+function startMock(kind){
+  const T=MOCK_TYPES[kind];
+  const items=[].concat(...FIELDS.map(f=>shuffle(Q.filter(q=>q.field===f&&q.lv===T.lv)).slice(0,T.per[f]||0).map(q=>q.id)));
+  mock={kind,items,sel:{},pos:0,start:Date.now(),limit:T.min*60000,result:null};
+  mockQuit=false; saveMock(); go('mock');
+}
+function mockLeft(){return mock?Math.max(0,mock.start+mock.limit-Date.now()):0}
+const fmtMs=ms=>{const s=Math.ceil(ms/1000);return Math.floor(s/60)+':'+pad(s%60)};
+function gradeMock(){
+  if(!mock||mock.result) return;
+  const fs={}, sc=[0,0], marks=[];
+  mock.items.forEach((id,i)=>{
+    const q=QBY[id]; const you=(mock.sel[i]||[]).map(x=>x+1).sort((a,b)=>a-b);
+    const ok=you.join()===q.ans.slice().sort((a,b)=>a-b).join();
+    const f=fs[q.field]||(fs[q.field]=[0,0]); f[1]++; sc[1]++; if(ok){f[0]++; sc[0]++}
+    marks.push(ok?1:0);
+    if(!you.length) return;
+    const r=S.mcq[id]||{n:0,c:0}; r.n++; if(ok) r.c++; r.last=ok; r.at=today(); S.mcq[id]=r;
+    const d=S.days[today()]||{n:0,c:0}; d.n++; if(ok) d.c++; S.days[today()]=d;
+  });
+  const pass=sc[0]>=Math.ceil(sc[1]*PASS);
+  const mins=Math.min(Math.ceil((Date.now()-mock.start)/60000),mock.limit/60000);
+  mock.result={sc,fs,pass,mins,marks};
+  S.mocks=(S.mocks||[]).concat([{at:today(),kind:mock.kind,sc,fs,pass,mins}]);
+  saveMock(); persist(); updateBadge(); sendScore(); checkBadges();
+}
+function lsLoad(){try{const t=localStorage.getItem(LS);return t?JSON.parse(t):null}catch(e){return null}}
+function lsSave(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
+function importHistory(){ S.imported=true; }
+async function persist(){
+  lsSave();
+  if(!store) return;
+  if(saving){dirty=true;return}
+  saving=true;
+  try{do{dirty=false;await store.set(JSON.parse(JSON.stringify(S)))}while(dirty);setSync('保存済み')}
+  catch(e){setSync('この端末にだけ保存中')}
+  saving=false;
+}
+function setSync(t){document.getElementById('sync').textContent=t}
+function record(kind,id,ok){
+  const map=kind==='mcq'?S.mcq:S.ox;
+  const r=map[id]||{n:0,c:0}; r.n++; if(ok) r.c++; r.last=ok; r.at=today(); map[id]=r;
+  const d=S.days[today()]||{n:0,c:0}; d.n++; if(ok) d.c++; S.days[today()]=d;
+  persist(); updateBadge(); sendScore(); checkBadges();
+}
+function totals(){
+  let n=0,c=0; for(const k in S.days){n+=S.days[k].n;c+=S.days[k].c} return {n,c};
+}
+function kindTotals(map){let n=0,c=0;for(const k in map){n+=map[k].n;c+=map[k].c}return{n,c}}
+function missList(){
+  const out=[];
+  for(const id in S.mcq) if(S.mcq[id].last===false && QBY[id]) out.push({kind:'mcq',id,at:S.mcq[id].at});
+  for(const id in S.ox) if(S.ox[id].last===false){const [qid,i]=id.split('#'); if(QBY[qid]) out.push({kind:'ox',id,qid,i:+i,at:S.ox[id].at})}
+  return out.sort((a,b)=>(b.at||'').localeCompare(a.at||''));
+}
+function updateBadge(){const n=missList().length;document.getElementById('missBadge').innerHTML=n?' <span class="badge">'+n+'</span>':''}
+
+/* ---------- settings (per-viewer convenience) ---------- */
+let cfg={mode:'mcq',lv:'N2',field:'all',order:'random',count:10};
+try{const t=localStorage.getItem(LS+'-cfg');if(t)cfg=Object.assign(cfg,JSON.parse(t))}catch(e){}
+cfg.mode='mcq';
+const saveCfg=()=>{try{localStorage.setItem(LS+'-cfg',JSON.stringify(cfg))}catch(e){}};
+
+/* ---------- session ---------- */
+let sess=null; // {items:[{kind,id,qid,i}], pos, answered, sel:[], score}
+function buildItems(onlyMiss){
+  let items=[];
+  if(onlyMiss){items=missList().filter(m=>m.kind===cfg.mode).map(m=>m.kind==='mcq'?{kind:'mcq',id:m.id}:{kind:'ox',id:m.id,qid:m.qid,i:m.i})}
+  else{
+    const qs=Q.filter(q=>(cfg.lv==='all'||q.lv===cfg.lv)&&(cfg.field==='all'||q.field===cfg.field));
+    if(cfg.mode==='mcq') items=qs.map(q=>({kind:'mcq',id:q.id}));
+    else qs.forEach(q=>q.opts.forEach((_,i)=>items.push({kind:'ox',id:q.id+'#'+i,qid:q.id,i})));
+  }
+  if(cfg.order==='random') items=shuffle(items);
+  if(!onlyMiss && cfg.count) items=items.slice(0,cfg.count);
+  return items;
+}
+function start(items,label){
+  if(!items.length){toast('この条件の問題はありません');return}
+  sess={items,pos:0,answered:false,sel:[],score:0,label:label||''};
+  go('quiz');
+}
+
+/* ---------- render ---------- */
+let tab='home';
+const view=document.getElementById('view');
+function go(t){tab=t;render();window.scrollTo(0,0);if(t==='rank')loadRank()}
+document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.tab)));
+function render(){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===tab?'page':'false'));
+  if(tab!=='mock'&&mockTick){clearInterval(mockTick);mockTick=null}
+  ({home:renderHome,quiz:renderQuiz,miss:renderMiss,stats:renderStats,rank:renderRank,words:renderWords,mock:renderMock})[tab]();
+}
+function segBtns(key,opts){return opts.map(([v,l])=>'<button data-k="'+key+'" data-v="'+v+'" aria-pressed="'+(String(cfg[key])===String(v))+'">'+l+'</button>').join('')}
+
+function renderHome(){
+  const t=totals(), td=S.days[today()]||{n:0,c:0}, miss=missList();
+  const mm=miss.filter(m=>m.kind===cfg.mode).length;
+  view.innerHTML=`<div class="stack fade">
+   <div class="hero">
+    <div class="stat main"><div class="lab">今までの正解数</div><div class="num">${t.c}<small> 問 ／ ${t.n}問中（${pct(t.c,t.n)}%）</small></div></div>
+    <div class="stat"><div class="lab">今日の正答率</div><div class="num">${td.n?pct(td.c,td.n)+'<small>%</small>':'—'}</div><div class="note">${td.c} / ${td.n}問</div></div>
+    <div class="stat"><div class="lab">間違えた問題</div><div class="num">${miss.length}<small> 問</small></div><div class="note">解き直すと消えます</div></div>
+   </div>
+   ${(()=>{const st=streakInfo(),bc=earnedIds().length;return `<section class="panel streak">
+     <span class="fire" aria-hidden="true">${st.cur?'🔥':'🌱'}</span>
+     <div><div class="big">${st.cur}<small style="font-size:.9rem"> 日連続</small></div>
+     <div class="sub">${st.today?'今日も達成！ 明日も続けよう':(st.cur?'今日解くと '+(st.cur+1)+' 日連続！':'今日から連続記録をはじめよう')}　最高 ${st.best}日</div></div>
+     <button class="bc" id="toBadges"><b>🏅 ${bc}</b><span>/ ${BADGES.length} バッジ</span></button></section>`})()}
+   <section class="panel stack" style="gap:8px">
+    <h2>模試モード</h2>
+    ${mock&&!mock.result&&mockLeft()>0?`<p class="note" style="margin:0">${MOCK_TYPES[mock.kind].label}の途中です（残り ${fmtMs(mockLeft())}）</p><button class="btn" id="mockResume">模試の続きを解く</button>`:
+     `<p class="note" style="margin:0">時間を計って本番のように解き、6割（目安）を超えたか判定します。読み・語彙・文法・読解からバランスよく出題します。</p>
+     <div class="row"><button class="btn" data-mock="n2">N2 模試<br><small style="font-weight:400">36問・60分</small></button><button class="btn" data-mock="n1">N1 模試<br><small style="font-weight:400">36問・60分</small></button></div>
+     <button class="btn ghost" data-mock="mini">N2 ミニ模試<small style="font-weight:400">（18問・30分）</small></button>`}
+   </section>
+   <section class="panel stack">
+    <div><p class="field-label">レベル</p><div class="seg">${segBtns('lv',[['N2','N2'],['N1','N1'],['all','両方']])}</div></div>
+    <div><p class="field-label">問題の種類</p><div class="seg">${segBtns('field',[['all','すべて']].concat(FIELDS.map(f=>[f,FSHORT[f]])))}</div></div>
+    <div><p class="field-label">順番</p><div class="seg">${segBtns('order',[['random','ランダム'],['seq','番号順']])}</div></div>
+    <div><p class="field-label">問題数</p><div class="seg">${segBtns('count',[[5,'5問'],[10,'10問'],[20,'20問'],[0,'全部']])}</div></div>
+    <button class="btn" id="go">はじめる</button>
+    <button class="btn ghost" id="goMiss" ${mm?'':'disabled'}>間違えた問題だけ解く（${mm}問）</button>
+   </section>
+   ${sess&&sess.pos<sess.items.length?'<button class="btn ghost" id="resume">続きから解く（'+(sess.pos+1)+' / '+sess.items.length+'）</button>':''}
+  </div>`;
+  view.querySelectorAll('[data-k]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.k;let v=b.dataset.v;if(k==='count')v=+v;cfg[k]=v;saveCfg();renderHome()}));
+  view.querySelector('#go').addEventListener('click',()=>start(buildItems(false)));
+  view.querySelector('#goMiss').addEventListener('click',()=>start(buildItems(true),'間違えた問題'));
+  const r=view.querySelector('#resume'); if(r) r.addEventListener('click',()=>go('quiz'));
+  view.querySelector('#toBadges').addEventListener('click',()=>{go('stats');setTimeout(()=>{const b=document.getElementById('badgeSec');if(b)b.scrollIntoView()},50)});
+  view.querySelectorAll('[data-mock]').forEach(b=>b.addEventListener('click',()=>startMock(b.dataset.mock)));
+  const mr=view.querySelector('#mockResume'); if(mr) mr.addEventListener('click',()=>go('mock'));
+}
+
+function renderQuiz(){
+  if(!sess){view.innerHTML='<div class="panel empty fade">ホームで方式と分野を選んで「はじめる」を押してね。<br><br><button class="btn" id="h">ホームへ</button></div>';view.querySelector('#h').addEventListener('click',()=>go('home'));return}
+  if(sess.pos>=sess.items.length){return renderDone()}
+  const it=sess.items[sess.pos];
+  const q=QBY[it.kind==='mcq'?it.id:it.qid];
+  const head=`<div class="qhead"><span>${sess.label?esc(sess.label)+' ・ ':''}${sess.pos+1} / ${sess.items.length}</span><span><span class="chip">${q.lv}・${esc(FSHORT[q.field]||q.field)}</span> </span></div>
+   <div class="progress"><i style="width:${sess.pos/sess.items.length*100}%"></i></div>`;
+  if(it.kind==='mcq') renderMcq(q,head); else renderOx(q,it,head);
+}
+function nextBtns(){
+  return `<div class="row"><button class="btn ghost" id="quit">やめる</button><button class="btn" id="next">${sess.pos+1<sess.items.length?'次の問題':'結果を見る'}</button></div>`;
+}
+function bindNext(){
+  view.querySelector('#next').addEventListener('click',()=>{sess.pos++;sess.answered=false;sess.sel=[];renderQuiz();window.scrollTo(0,0)});
+  view.querySelector('#quit').addEventListener('click',()=>{sess.pos=sess.items.length;renderQuiz()});
+}
+function renderMcq(q,head){
+  const need=q.ans.length;
+  if(!sess.answered){
+    view.innerHTML=`<div class="stack fade">${head}
+     <p class="stem">${stemOf(q)}</p>
+     <ul class="opts">${q.opts.map((o,i)=>`<li><div class="opt" role="button" tabindex="0" data-i="${i}" aria-pressed="${sess.sel.includes(i)}"><span class="n">${i+1}</span><span>${esc(o)}</span></div></li>`).join('')}</ul>
+     <button class="btn" id="check" ${sess.sel.length===need?'':'disabled'}>答え合わせ</button>
+    </div>`;
+    view.querySelectorAll('.opt').forEach(b=>{
+      const tog=e=>{if(e.target.closest('.term'))return;const i=+b.dataset.i;const k=sess.sel.indexOf(i);if(k>=0)sess.sel.splice(k,1);else{if(sess.sel.length>=need)sess.sel.shift();sess.sel.push(i)}renderQuiz()};
+      b.addEventListener('click',tog);b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(e)}});
+    });
+    view.querySelector('#check').addEventListener('click',()=>{
+      const you=sess.sel.map(i=>i+1).sort();const ok=you.join()===q.ans.slice().sort().join();
+      sess.answered=true;sess.lastOk=ok;if(ok)sess.score++;record('mcq',q.id,ok);renderQuiz();window.scrollTo(0,0);
+    });
+    return;
+  }
+  const you=sess.sel.map(i=>i+1).sort((a,b)=>a-b);
+  view.innerHTML=`<div class="stack fade">${head}
+   <div class="verdict">あなた：${you.join('と')} → ${sess.lastOk?'<span class="v-ok">⭕ 正解</span>':'<span class="v-ng">❌ 不正解</span>'}　正解：${q.ans.join('と')}</div>
+   <p class="stem" style="margin:0">${stemOf(q)}</p>
+   <div class="stack" style="gap:8px">${q.opts.map((o,i)=>optRes(q,i,you.includes(i+1))).join('')}</div>
+   ${q.point?'<div class="point"><b>解説</b><br>'+hl(q.point)+'</div>':''}
+   <p class="note" style="margin:0">黄色いマーカーの文法をタップすると意味が出ます。</p>
+   ${nextBtns()}</div>`;
+  bindNext();
+}
+function renderOx(q,it,head){
+  const stmt=q.opts[it.i], truth=q.ans.includes(it.i+1);
+  if(!sess.answered){
+    view.innerHTML=`<div class="stack fade">${head}
+     <p class="note" style="margin:0">${esc(oxStem(q))}</p>
+     <div class="panel"><p class="stem" style="margin:0">${esc(stmt)}</p></div>
+     <div class="ox"><button data-a="1">○<span>正しい</span></button><button data-a="0">×<span>まちがい</span></button></div>
+    </div>`;
+    view.querySelectorAll('.ox button').forEach(b=>b.addEventListener('click',()=>{
+      const a=b.dataset.a==='1';const ok=a===truth;sess.answered=true;sess.lastOk=ok;sess.lastA=a;if(ok)sess.score++;record('ox',it.id,ok);renderQuiz();
+    }));
+    return;
+  }
+  view.innerHTML=`<div class="stack fade">${head}
+   <div class="verdict">あなた：${sess.lastA?'○':'×'} → ${sess.lastOk?'<span class="v-ok">⭕ 正解</span>':'<span class="v-ng">❌ 不正解</span>'}　正解：${truth?'○':'×'}</div>
+   <div class="res ${truth?'ok':'ng'}"><div class="line"><span>${truth?'🟢':'🔴'}</span><span>${hl(stmt)}</span></div>
+   <div class="fix">${truth?'→ このままで正しい'+(q.exp[it.i]?'（'+hl(q.exp[it.i])+'）':''):'→ <b>'+hl(q.exp[it.i]||'誤り')+'</b>'}</div></div>
+   ${q.point?'<div class="point"><b>覚えるポイント</b><br>'+hl(q.point)+'</div>':''}
+   ${nextBtns()}</div>`;
+  bindNext();
+}
+function renderDone(){
+  const n=sess.items.length, answered=Math.min(n, sess.items.length);
+  const done=sess.score, tried=sess.answeredCount||null;
+  view.innerHTML=`<div class="stack fade"><div class="panel stack">
+    <h2>おつかれさま！</h2>
+    <div class="stat main" style="margin:0"><div class="lab">今回の正解</div><div class="num">${sess.score}<small> 問</small></div></div>
+    <p class="note" style="margin:0">間違えた問題は「間違えた」タブからすぐ解き直せます。</p>
+    <div class="row"><button class="btn ghost" id="toMiss">間違えた問題へ</button><button class="btn" id="again">ホームへ</button></div>
+  </div></div>`;
+  view.querySelector('#toMiss').addEventListener('click',()=>{sess=null;go('miss')});
+  view.querySelector('#again').addEventListener('click',()=>{sess=null;go('home')});
+}
+
+function renderMiss(){
+  const miss=missList();
+  const mcq=miss.filter(m=>m.kind==='mcq'), ox=miss.filter(m=>m.kind==='ox');
+  const row=m=>{const q=QBY[m.kind==='mcq'?m.id:m.qid];
+    return `<li><button class="item" data-kind="${m.kind}" data-id="${esc(m.id)}"><span class="meta"><span class="chip">${q.lv}・${esc(FSHORT[q.field]||q.field)}</span><span>${OWNER&&q.date!=='新作'?'一日一問 '+esc(q.date):''}</span><span style="margin-left:auto">${m.at?esc(m.at.slice(5).replace('-','/'))+' に不正解':''}</span></span>
+      <span class="t">${m.kind==='mcq'?esc(q.topic):esc(q.opts[m.i])}</span></button></li>`};
+  view.innerHTML=`<div class="stack fade">
+   <h2>間違えた問題</h2>
+   <p class="note" style="margin:0">タップするとその問題にすぐ飛びます。正解するとリストから消えます。</p>
+   <section class="stack" style="gap:8px"><div class="row" style="align-items:center"><h3 style="font-size:1rem">選択肢方式（${mcq.length}）</h3><button class="btn ghost" style="flex:none;width:auto;padding:6px 12px;font-size:.85rem" data-all="mcq" ${mcq.length?'':'disabled'}>まとめて解く</button></div>
+    ${mcq.length?'<ul class="list">'+mcq.map(row).join('')+'</ul>':'<div class="empty">ありません</div>'}</section>
+   <section class="stack" style="gap:8px"><div class="row" style="align-items:center"><h3 style="font-size:1rem">一問一答（${ox.length}）</h3><button class="btn ghost" style="flex:none;width:auto;padding:6px 12px;font-size:.85rem" data-all="ox" ${ox.length?'':'disabled'}>まとめて解く</button></div>
+    ${ox.length?'<ul class="list">'+ox.map(row).join('')+'</ul>':'<div class="empty">ありません</div>'}</section>
+  </div>`;
+  view.querySelectorAll('.item').forEach(b=>b.addEventListener('click',()=>{
+    const kind=b.dataset.kind,id=b.dataset.id;
+    if(kind==='mcq') start([{kind:'mcq',id}],'解き直し');
+    else{const [qid,i]=id.split('#');start([{kind:'ox',id,qid,i:+i}],'解き直し')}
+  }));
+  view.querySelectorAll('[data-all]').forEach(b=>b.addEventListener('click',()=>{
+    const k=b.dataset.all;start(missList().filter(m=>m.kind===k).map(m=>m.kind==='mcq'?{kind:'mcq',id:m.id}:{kind:'ox',id:m.id,qid:m.qid,i:m.i}),'間違えた問題');
+  }));
+}
+
+function chartSvg(days){
+  const W=360,H=200,L=34,R=6,T=20,B=26; const n=days.length; const bw=(W-L-R)/Math.max(n,1);
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="日ごとの正答率">`;
+  [0,50,100].forEach(v=>{const y=T+(H-T-B)*(1-v/100);s+=`<line class="grid" x1="${L}" x2="${W-R}" y1="${y}" y2="${y}"/><text x="${L-4}" y="${y+3}" text-anchor="end">${v}%</text>`});
+  days.forEach((d,i)=>{const p=pct(d.c,d.n);const h=(H-T-B)*p/100;const x=L+i*bw+bw*.18;const w=bw*.64;const y=T+(H-T-B)-h;
+    s+=`<rect class="b" x="${x}" y="${y}" width="${w}" height="${Math.max(h,1)}" rx="3"/>`;
+    if(n<=10) s+=`<text class="lbl" x="${x+w/2}" y="${y-4}" text-anchor="middle">${p}</text>`;
+    if(n<=7||i%2===(n-1)%2) s+=`<text x="${x+w/2}" y="${H-10}" text-anchor="middle">${esc(d.k.slice(5).replace('-','/').replace(/^0/,''))}</text>`});
+  return s+'</svg>';
+}
+function renderStats(){
+  const t=totals(), m=kindTotals(S.mcq), o=kindTotals(S.ox);
+  const keys=Object.keys(S.days).sort();
+  const days=keys.map(k=>Object.assign({k},S.days[k]));
+  const recent=days.slice(-14);
+  const fs=FIELDS.map(f=>{let n=0,c=0;for(const id in S.mcq){if(QBY[id]&&QBY[id].field===f){n+=S.mcq[id].n;c+=S.mcq[id].c}}for(const id in S.ox){const q=QBY[id.split('#')[0]];if(q&&q.field===f){n+=S.ox[id].n;c+=S.ox[id].c}}return{f,n,c}});
+  view.innerHTML=`<div class="stack fade">
+   <div class="stat main"><div class="lab">今までの正解数</div><div class="num">${t.c}<small> 問 ／ ${t.n}問中（${pct(t.c,t.n)}%）</small></div></div>
+   <div class="twocol">
+    <div class="mini"><b>${m.c}/${m.n}</b><span>選択肢方式</span></div>
+    <div class="mini"><b>${o.c}/${o.n}</b><span>一問一答</span></div>
+    <div class="mini"><b>${keys.length}</b><span>勉強した日</span></div>
+   </div>
+   <section class="panel stack" style="gap:8px" id="badgeSec"><h2>バッジ（${earnedIds().length} / ${BADGES.length}）</h2>${badgeGrid()}</section>
+   ${(S.mocks||[]).length?`<section class="panel stack" style="gap:8px"><h2>模試の記録</h2><div class="tw"><table><thead><tr><th>日付</th><th>種類</th><th>正解</th><th>結果</th></tr></thead><tbody>
+    ${S.mocks.slice().reverse().map(m=>`<tr><td>${esc(m.at.slice(5).replace('-','/'))}</td><td>${MOCK_TYPES[m.kind]?MOCK_TYPES[m.kind].label:''}</td><td>${m.sc?m.sc[0]+'/'+m.sc[1]:''}</td><td>${m.pass?'⭕ 合格':'❌'}</td></tr>`).join('')}
+    </tbody></table></div></section>`:''}
+   <section class="panel stack" style="gap:8px"><h2>日ごとの正答率</h2><p class="note" style="margin:0">直近${recent.length}日分（棒の上の数字は%）</p>${recent.length?chartSvg(recent):'<div class="empty">まだ記録がありません</div>'}</section>
+   <section class="panel stack" style="gap:8px"><h2>レベル別</h2><div class="twocol" style="grid-template-columns:1fr 1fr">${['N2','N1'].map(l=>{let n=0,c=0;for(const id in S.mcq){if(QBY[id]&&QBY[id].lv===l){n+=S.mcq[id].n;c+=S.mcq[id].c}}return '<div class="mini"><b>'+(n?pct(c,n)+'%':'—')+'</b><span>'+l+'（'+c+'/'+n+'）</span></div>'}).join('')}</div></section>
+   <section class="panel stack" style="gap:8px"><h2>問題の種類別</h2>
+    <div class="tw"><table><thead><tr><th>分野</th><th>正解/解いた</th><th>正答率</th></tr></thead><tbody>
+    ${fs.map(x=>`<tr><td>${FSHORT[x.f]}</td><td>${x.c} / ${x.n}</td><td>${x.n?pct(x.c,x.n)+'%':'—'}<span class="bar" style="width:${pct(x.c,x.n)*0.6}px"></span></td></tr>`).join('')}
+    </tbody></table></div></section>
+   <section class="panel stack" style="gap:8px"><h2>解いた日の記録</h2>
+    <div class="tw"><table><thead><tr><th>日付</th><th>解いた</th><th>正解</th><th>正答率</th></tr></thead><tbody>
+    ${days.slice().reverse().map(d=>`<tr><td>${esc(d.k.replace(/-/g,'/'))}</td><td>${d.n}</td><td>${d.c}</td><td>${pct(d.c,d.n)}%</td></tr>`).join('')||'<tr><td colspan="4">まだ記録がありません</td></tr>'}
+    </tbody></table></div>
+    </section>
+  </div>`;
+}
+let rkMode='all', rkData=null, rkErr=false;
+function effStreak(r){if(!r.ld||!r.streak)return 0;const y=dayStr(new Date(Date.now()-864e5));return (r.ld===today()||r.ld===y)?r.streak:0}
+function rankRows(){
+  if(!rkData) return [];
+  let rows=rkData.slice();
+  if(rkMode==='week'){const wk=weekKey();rows=rows.filter(r=>r.wk===wk&&r.wc>0).sort((a,b)=>b.wc-a.wc||b.wn-a.wn)}
+  else if(rkMode==='streak'){rows=rows.map(r=>Object.assign({},r,{es:effStreak(r)})).filter(r=>r.es>0).sort((a,b)=>b.es-a.es||b.correct-a.correct)}
+  else rows=rows.filter(r=>r.correct>0).sort((a,b)=>b.correct-a.correct||a.total-b.total);
+  let rank=0,prev=null; return rows.map((r,i)=>{const v=rkMode==='week'?r.wc:rkMode==='streak'?r.es:r.correct;if(v!==prev){rank=i+1;prev=v}return Object.assign({rank},r)});
+}
+async function loadRank(){
+  if(!RANK_URL) return;
+  rkErr=false;
+  try{await sendScore(true);const res=await fetch(RANK_URL+'?app=jlpt&me='+encodeURIComponent(myId())+'&t='+Date.now());const j=await res.json();rkData=j.rows||[]}
+  catch(e){rkErr=true}
+  if(tab==='rank') renderRank();
+}
+function renderRank(){
+  if(!RANK_URL){view.innerHTML='<div class="stack fade"><h2>ランキング</h2><div class="panel empty">ランキングは準備中です。</div></div>';return}
+  const nick=rkGet('nick')||'';
+  const rows=rankRows(); const me=rows.find(r=>r.me);
+  const list=rows.slice(0,50);
+  const sc=myScore();
+  view.innerHTML=`<div class="stack fade">
+   <h2>ランキング</h2>
+   <section class="panel stack" style="gap:8px">
+    <p class="field-label" style="margin:0">ニックネーム（ランキングに表示されます）</p>
+    <div class="row"><input class="search" id="nick" maxlength="12" placeholder="例：みかん太郎" value="${esc(nick)}" autocomplete="off"><button class="btn" id="nickSave" style="flex:none;width:auto">${nick?'変更':'参加する'}</button></div>
+    <p class="note" style="margin:0">${nick?'正解するたびに自動でランキングに反映されます。':'ニックネームを決めると、正解数でみんなと競争できます。本名は入れないでね。'}</p>
+   </section>
+   <div class="seg">${[['all','累計正解'],['week','今週'],['streak','🔥連続日数']].map(([v,l])=>'<button data-rm="'+v+'" aria-pressed="'+(rkMode===v)+'">'+l+'</button>').join('')}</div>
+   ${nick?`<div class="stat main"><div class="lab">あなた（${esc(nick)}）</div><div class="num">${me?me.rank+'<small> 位　</small>':''}${rkMode==='week'?sc.wc:rkMode==='streak'?sc.streak:sc.correct}<small>${rkMode==='streak'?' 日連続':' 問正解'}</small></div></div>`:''}
+   ${rkErr?'<div class="panel empty">ランキングを読み込めませんでした。電波のよいところで「更新」を押してください。</div>':
+     !rkData?'<div class="panel empty">読み込み中…</div>':
+     list.length?'<ul class="rk">'+list.map(r=>{const v=rkMode==='week'?r.wc:rkMode==='streak'?r.es:r.correct,n=rkMode==='week'?r.wn:r.total;
+       return `<li class="${r.me?'me':''}"><span class="no ${r.rank<=3?'g'+r.rank:''}">${r.rank}</span><span class="nm">${esc(r.name)}${r.me?'（あなた）':''}<small>${effStreak(r)?'🔥'+effStreak(r)+'日連続　':''}${r.bc?'🏅'+r.bc:''}</small></span><span class="sc"><b>${v}</b> ${rkMode==='streak'?'日':'問'}${rkMode==='streak'?'':'<span>正答率 '+pct(v,n)+'%</span>'}</span></li>`}).join('')+'</ul>'
+     :'<div class="panel empty">まだだれもいません。一番乗りしよう！</div>'}
+   <button class="btn ghost" id="rkReload">更新</button>
+   ${nick?'<button class="btn ghost" id="rkLeave" style="font-size:.85rem">ランキングから外れる</button>':''}
+   <p class="note" style="margin:0">今週は月曜日から日曜日までの集計です。</p>
+  </div>`;
+  view.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{rkMode=b.dataset.rm;renderRank()}));
+  view.querySelector('#rkReload').addEventListener('click',()=>{rkData=null;renderRank();loadRank()});
+  view.querySelector('#nickSave').addEventListener('click',()=>{
+    const v=view.querySelector('#nick').value.replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,12);
+    if(!v){view.querySelector('#nick').focus();return}
+    rkSet('nick',v); rkData=null; renderRank(); loadRank();
+  });
+  const lv=view.querySelector('#rkLeave');
+  if(lv) lv.addEventListener('click',async()=>{
+    rkSet('nick',null); rkData=null; renderRank();
+    try{await fetch(RANK_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'delete',app:'jlpt',id:myId()})})}catch(e){}
+    setTimeout(loadRank,800);
+  });
+}
+function renderMock(){
+  if(!mock){view.innerHTML='<div class="panel empty fade">ホームの「模試モード」から始めてね。<br><br><button class="btn" id="h">ホームへ</button></div>';view.querySelector('#h').addEventListener('click',()=>go('home'));return}
+  if(!mock.result&&mockLeft()<=0){gradeMock()}
+  if(mock.result) return renderMockResult();
+  const T=MOCK_TYPES[mock.kind], N=mock.items.length, i=mock.pos, q=QBY[mock.items[i]], need=q.ans.length, sel=mock.sel[i]||[];
+  const answered=Object.keys(mock.sel).filter(k=>(mock.sel[k]||[]).length===QBY[mock.items[k]].ans.length).length;
+  view.innerHTML=`<div class="stack fade">
+   <div class="mockbar"><span>${T.label}　${i+1} / ${N}（${esc(FSHORT[q.field])}）</span><span>残り <span class="tm" id="tm">${fmtMs(mockLeft())}</span></span></div>
+   <div class="progress"><i style="width:${answered/N*100}%"></i></div>
+   <p class="stem">${stemOf(q)}</p>
+   <ul class="opts">${q.opts.map((o,j)=>`<li><div class="opt" role="button" tabindex="0" data-j="${j}" aria-pressed="${sel.includes(j)}"><span class="n">${j+1}</span><span>${esc(o)}</span></div></li>`).join('')}</ul>
+   <div class="row"><button class="btn ghost" id="mPrev" ${i?'':'disabled'}>前へ</button>${i+1<N?'<button class="btn" id="mNext">次へ</button>':'<button class="btn" id="mGrade">採点する</button>'}</div>
+   <details class="rv"><summary>問題一覧（解答済み ${answered} / ${N}）</summary>
+    <div class="qgrid">${mock.items.map((id,k)=>`<button data-k="${k}" class="${(mock.sel[k]||[]).length===QBY[id].ans.length?'done':''} ${k===i?'cur':''}">${k+1}</button>`).join('')}</div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="mGrade2">ここで採点する</button></div></details>
+   <button class="btn ghost" id="mQuit" style="font-size:.85rem">${mockQuit?'もう一度押すと終了（この模試は記録されません）':'模試をやめる'}</button>
+  </div>`;
+  view.querySelectorAll('.opt').forEach(b=>{
+    const tog=()=>{const j=+b.dataset.j;const a=(mock.sel[i]||[]).slice();const k=a.indexOf(j);if(k>=0)a.splice(k,1);else{if(a.length>=need)a.shift();a.push(j)}mock.sel[i]=a;saveMock();renderMock()};
+    b.addEventListener('click',tog);b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tog()}});
+  });
+  const mv=d=>{mock.pos=Math.max(0,Math.min(N-1,mock.pos+d));mockQuit=false;saveMock();renderMock();window.scrollTo(0,0)};
+  view.querySelector('#mPrev').addEventListener('click',()=>mv(-1));
+  const nx=view.querySelector('#mNext'); if(nx) nx.addEventListener('click',()=>mv(1));
+  view.querySelectorAll('.qgrid button').forEach(b=>b.addEventListener('click',()=>{mock.pos=+b.dataset.k;saveMock();renderMock();window.scrollTo(0,0)}));
+  const gr=()=>{gradeMock();renderMock();window.scrollTo(0,0)};
+  const g1=view.querySelector('#mGrade'); if(g1) g1.addEventListener('click',gr);
+  view.querySelector('#mGrade2').addEventListener('click',gr);
+  view.querySelector('#mQuit').addEventListener('click',()=>{if(!mockQuit){mockQuit=true;renderMock();return}mock=null;mockQuit=false;saveMock();go('home')});
+  if(!mockTick) mockTick=setInterval(()=>{
+    if(!mock||mock.result){clearInterval(mockTick);mockTick=null;return}
+    const left=mockLeft(); const el=document.getElementById('tm');
+    if(left<=0){clearInterval(mockTick);mockTick=null;gradeMock();if(tab==='mock'){renderMock();window.scrollTo(0,0)};toast('⏰ 時間になりました。採点しました');return}
+    if(el){el.textContent=fmtMs(left);el.classList.toggle('low',left<5*60000)}
+  },1000);
+}
+function renderMockResult(){
+  const r=mock.result, T=MOCK_TYPES[mock.kind];
+  const line=n=>Math.ceil(n*PASS);
+  const secRow=(lab,s)=>`<tr><td>${lab}</td><td>${s[0]} / ${s[1]}</td><td>${pct(s[0],s[1])}%</td></tr>`;
+  view.innerHTML=`<div class="stack fade">
+   <h2>${T.label}の結果</h2>
+   <div class="panel stack" style="gap:6px">
+    <div class="pass ${r.pass?'ok':'ng'}">${r.pass?'🎉 合格ライン突破！':'あと少し！'}</div>
+    <p class="note" style="margin:0;text-align:center">${r.sc[0]} / ${r.sc[1]}問正解（${pct(r.sc[0],r.sc[1])}%）　目安 ${line(r.sc[1])}問　かかった時間 ${r.mins}分</p>
+    <div class="tw"><table class="wrap1"><thead><tr><th>問題の種類</th><th>正解</th><th>正答率</th></tr></thead><tbody>
+     ${FIELDS.filter(f=>r.fs[f]).map(f=>secRow(FSHORT[f],r.fs[f])).join('')}</tbody></table></div>
+    <p class="note" style="margin:0">本番は聴解もあり、得点区分ごとの基準点もあります。6割は練習の目安です。</p>
+   </div>
+   <h3 style="font-size:1rem">答え合わせ（タップで解説）</h3>
+   <div class="stack" style="gap:6px">${mock.items.map((id,k)=>{const q=QBY[id],ok=r.marks[k],you=(mock.sel[k]||[]).map(x=>x+1).sort((a,b)=>a-b);
+     return `<details class="rv"><summary>${ok?'⭕':'❌'} ${k+1}. ${esc(q.topic)}</summary>
+      <div class="stack" style="gap:6px"><p class="note" style="margin:0">あなた：${you.length?you.join('と'):'未回答'}　正解：${q.ans.join('と')}</p>
+      <p class="stem" style="margin:0">${stemOf(q)}</p>${q.opts.map((o,j)=>optRes(q,j,you.includes(j+1))).join('')}
+      ${q.point?'<div class="point"><b>解説</b><br>'+hl(q.point)+'</div>':''}</div></details>`}).join('')}</div>
+   <p class="note" style="margin:0">間違えた問題は「間違えた」タブにも入っています。</p>
+   <div class="row"><button class="btn ghost" id="mMiss">間違えた問題へ</button><button class="btn" id="mHome">ホームへ</button></div>
+  </div>`;
+  const end=t=>{mock=null;saveMock();go(t)};
+  view.querySelector('#mMiss').addEventListener('click',()=>end('miss'));
+  view.querySelector('#mHome').addEventListener('click',()=>end('home'));
+}
+function renderWords(){
+  view.innerHTML=`<div class="stack fade"><h2>文法メモ</h2>
+   <input class="search" id="q" type="search" placeholder="文法をさがす（例：ならでは）" aria-label="文法をさがす">
+   <dl class="gl" id="gl"></dl></div>`;
+  const draw=f=>{document.getElementById('gl').innerHTML=Object.keys(GL).filter(k=>!f||k.includes(f)||GL[k].includes(f)).map(k=>`<div><dt>${esc(k)}</dt><dd>${esc(GL[k])}</dd></div>`).join('')||'<div class="empty">見つかりません</div>'};
+  draw('');document.getElementById('q').addEventListener('input',e=>draw(e.target.value.trim()));
+}
+
+/* ---------- term sheet ---------- */
+const sheet=document.getElementById('sheet');
+document.addEventListener('click',e=>{
+  const t=e.target.closest('.term'); if(!t) return;
+  e.stopPropagation(); const k=t.dataset.term;
+  sheet.innerHTML=`<div class="sheet-bg" id="sbg"></div><div class="sheet" role="dialog" aria-label="言葉の解説"><h3>${esc(k)}</h3><p>${esc(GL[k]||'')}</p><button class="btn" id="sclose">閉じる</button></div>`;
+  sheet.hidden=false;
+  const close=()=>{sheet.hidden=true;sheet.innerHTML=''};
+  document.getElementById('sbg').addEventListener('click',close);document.getElementById('sclose').addEventListener('click',close);
+  document.getElementById('sclose').focus();
+},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!sheet.hidden){sheet.hidden=true;sheet.innerHTML=''}});
+
+/* ---------- boot ---------- */
+const local=lsLoad(); if(local) S=Object.assign(S,local);
+if(!S.mocks) S.mocks=[]; if(!local) importHistory(); if(!S.badges) S.badges=earnedIds(); lsSave();
+updateBadge(); render(); setSync('この端末に保存');
+(async()=>{
+  try{
+    if(!window.claude||!window.claude.use) return;
+    const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);
+    if(!db||!user) return;
+    const uid=await user.id(); if(!uid) return;
+    OWNER=!!(await user.isOwner());
+    const ref=db.doc('data/users/'+uid+'/progress');
+    const snap=await ref.get();
+    if(snap.exists){const d=snap.data();S=Object.assign({v:1,mcq:{},ox:{},days:{},imported:true,mocks:[]},JSON.parse(JSON.stringify(d)));if(!S.badges)S.badges=earnedIds();lsSave()}
+    store=ref; setSync('保存済み');
+    if(!snap.exists){ if(OWNER) importHistory(); persist(); }
+    updateBadge(); if(tab!=='quiz'||!sess) render();
+  }catch(e){setSync('この端末に保存')}
+})();
+})();
+</script>
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(()=>{})})}
+</script>
+</body>
+</html>
